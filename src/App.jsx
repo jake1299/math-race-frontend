@@ -13,6 +13,8 @@ import ChangePasswordPage from "./pages/auth/ChangePasswordPage.jsx";
 import WebSocketProvider from "./services/webSocket/WebSocketProvider.jsx";
 import CreateRacePage from "./pages/race/CreateRacePage.jsx";
 import RacePage from "./pages/race/RacePage.jsx";
+import GameHistoryPage from "./pages/history/GameHistoryPage.jsx";
+import GameDetailsPage from "./pages/history/GameDetailsPage.jsx";
 
 function App() {
 
@@ -30,6 +32,9 @@ function App() {
                         <Route path={"verify/:token"} element={<VerifyAccountPage/>}/>
                     </Route>
 
+                    <Route path={"/history"} element={<GameHistoryPage/>}/>
+                    <Route path={"/history/:gameId"} element={<GameDetailsPage/>}/>
+
                     <Route path={"/race"}>
                         <Route path="join" element={<JoinRacePage/>}/>
                         <Route path="create" element={<CreateRacePage/>}/>
@@ -46,6 +51,3 @@ function App() {
 }
 
 export default App;
-
-{/*<Route path="/history" element={<GameHistoryPage/>}/>*/}
-{/*<Route path="/history/:gameId" element={<GameDetailsPage/>}/>*/}

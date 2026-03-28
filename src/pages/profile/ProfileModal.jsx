@@ -46,7 +46,7 @@ function ProfileModal({onClose, user}) {
                 <h3>Activity</h3>
                 <Card>
                     <h2>View Game History</h2>
-                    <Button>open</Button>
+                    <Button onClick={() => handleNavigation('/history')}>open</Button>
                 </Card>
             </section>
 

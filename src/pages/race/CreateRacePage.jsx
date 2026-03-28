@@ -11,7 +11,8 @@ import {ClipLoader} from "react-spinners";
 
 const INITIAL_STATE = {
     name: "",
-    targetScore: ""
+    targetScore: "",
+    isPrivate: true
 };
 
 function CreateRacePage() {
@@ -36,10 +37,10 @@ function CreateRacePage() {
     }, [alert, navigate]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value, type, checked} = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
         }));
     };
 
@@ -52,7 +53,7 @@ function CreateRacePage() {
         try {
             const response = await createRace(formData);
             if (response.success) {
-                const { code } = response.data;
+                const {code} = response.data;
                 navigate(`/race/${code}`);
             } else {
                 handleBackendError(response);
@@ -120,6 +121,7 @@ function CreateRacePage() {
                         value={formData.name}
                         onChange={handleChange}
                     />
+
                     <Input
                         name={"targetScore"}
                         type={"number"}
@@ -132,6 +134,17 @@ function CreateRacePage() {
                         required
                     />
 
+                    <div>
+                        <label>Private Race?</label>
+                        <input
+                            id="isPrivate"
+                            name="isPrivate"
+                            type="checkbox"
+                            checked={formData.isPrivate}
+                            onChange={handleChange}
+                        />
+                        <span>{formData.isPrivate ? "(Only with code)" : "(Public list)"}</span>
+                    </div>
                     <Button type={"submit"} disabled={isSubmitting}>
                         {isSubmitting ? <ClipLoader/> : "Create Race"}
                     </Button>
