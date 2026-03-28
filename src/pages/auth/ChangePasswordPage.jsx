@@ -1,93 +1,67 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "../../components/ui/Card.jsx";
-
-import "./Auth.css";
-import {useState} from "react";
-import Input from "../../components/ui/Input.jsx";
-import Button from "../../components/ui/Button.jsx";
-import {changePassword} from "../../services/authService.js";
-import {useNavigate} from "react-router-dom";
+import PasswordForm from "../../components/auth/PasswordForm.jsx"; // וודא שהנתיב נכון
+import { AlertModal, ALERT_TYPES } from "../../components/ui/AlertModal.jsx";
+import { changePassword } from "../../services/authService.js";
 
 function ChangePasswordPage() {
     const navigate = useNavigate();
-    const [status, setStatus] = useState('Waiting');
 
-    const [formData, setFormData] = useState({
-        password: "",
-        confirmPassword: ""
-    });
+    const [alert, setAlert] = useState(null);
 
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
-            return;
-        }
-
+    const handleAction = async (password) => {
         try {
-            const response = await changePassword(formData.password);
-            if (response.success === true) {
-                setStatus("Password change successfully!\n\n" + "מיד תועבר לדף הבית..'")
-                setTimeout(() => {
-                    navigate('/');
-                }, 3000);
-            }else {
-                setStatus(response.message);
+            const response = await changePassword(password);
+
+            if (response.success) {
+                setAlert({
+                    type: ALERT_TYPES.SUCCESS,
+                    title: "Success",
+                    message: "Password changed successfully! You are being redirected home.",
+                    onClose: () => navigate('/')
+                });
+
+                setTimeout(() => navigate('/'), 5000);
+            } else {
+                setAlert({
+                    type: ALERT_TYPES.ERROR,
+                    message: response.message || "Something went wrong"
+                });
             }
         } catch (err) {
-            console.log(err);
-            setStatus("Failed to change password");
+            console.error(err);
+            setAlert({
+                type: ALERT_TYPES.ERROR,
+                message: "Server connection failed!"
+            });
         }
     };
 
     return (
-        <>
-            <Card className="auth-card">
-                {status === 'Waiting' ? (
-                        <>
-                            <div>
-                                <h2>Change The Password</h2>
-                                <p>
-                                    Choose a password (8-14 characters, using letters & numbers) to keep your account safe
-                                    and get
-                                    back to the game. </p>
-                            </div>
-
-                            <form onSubmit={handleSubmit}>
-                                <Input
-                                    name={"password"}
-                                    type={"password"}
-                                    placeholder={"New Password"}
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <Input
-                                    name={"confirmPassword"}
-                                    type={"password"}
-                                    placeholder={"Confirm New Password"}
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <Button type="submit">Save Password</Button>
-                            </form>
-                        </>
-                    ) :
-
-                    <div>{status}</div>
+        <Card>
+            <PasswordForm
+                onSubmit={handleAction}
+                header={
+                    <>
+                        <h2>Change The Password</h2>
+                        <p>Choose a password (8-14 characters) to keep your account safe.</p>
+                    </>
                 }
-            </Card>
-        </>
-    )
+                buttonText="Save Password"
+            />
+
+            {alert && (
+                <AlertModal
+                    type={alert.type}
+                    title={alert.title}
+                    onClose={alert.onClose || (() => setAlert(null))}
+                >
+                    <p>{alert.message}</p>
+                </AlertModal>
+            )}
+        </Card>
+    );
 }
 
 export default ChangePasswordPage;

@@ -1,94 +1,68 @@
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Card from "../../components/ui/Card.jsx";
-
-import "./Auth.css";
-import {useState} from "react";
-import Input from "../../components/ui/Input.jsx";
-import Button from "../../components/ui/Button.jsx";
-import {resetPassword} from "../../services/authService.js";
-import {useNavigate, useParams} from "react-router-dom";
+import PasswordForm from "../../components/auth/PasswordForm.jsx";
+import { AlertModal, ALERT_TYPES } from "../../components/ui/AlertModal.jsx";
+import { resetPassword } from "../../services/authService.js";
 
 function ResetPasswordPage() {
     const navigate = useNavigate();
-    const {token}  = useParams();
-    const [status, setStatus] = useState('Waiting');
 
-    const [formData, setFormData] = useState({
-        password: "",
-        confirmPassword: ""
-    });
+    const { token } = useParams();
+    const [alert, setAlert] = useState(null);
 
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
-            return;
-        }
-
+    const handleAction = async (password) => {
         try {
-            const response = await resetPassword(formData.password,token);
-            if (response.success === true) {
-                setStatus("Password reset successfully!\n\n" + "מיד תועבר לדף ההתחברות..'")
-                setTimeout(() => {
-                    navigate('/login');
-                }, 3000);
-            }else {
-                setStatus(response.message);
+            const response = await resetPassword(password, token);
+
+            if (response.success) {
+                setAlert({
+                    type: ALERT_TYPES.SUCCESS,
+                    title: "Reset Successful",
+                    message: "Your password has been reset. Please log in with your new password.",
+                    onClose: () => navigate('/auth/login')
+                });
+
+                setTimeout(() => navigate('/auth/login'), 5000);
+            } else {
+                setAlert({
+                    type: ALERT_TYPES.ERROR,
+                    message: response.message
+                });
             }
         } catch (err) {
-            console.log(err);
-            setStatus("Failed to reset password");
+            console.error(err);
+            setAlert({
+                type: ALERT_TYPES.ERROR,
+                message: "Failed to reset password. The link might be expired."
+            });
         }
     };
 
     return (
-        <>
-            <Card className="auth-card">
-                {status === 'Waiting' ? (
-                        <>
-                            <div>
-                                <h2>Create New Password</h2>
-                                <p>
-                                    Choose a password (8-14 characters, using letters & numbers) to keep your account safe
-                                    and get
-                                    back to the game. </p>
-                            </div>
-
-                            <form onSubmit={handleSubmit}>
-                                <Input
-                                    name={"password"}
-                                    type={"password"}
-                                    placeholder={"New Password"}
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <Input
-                                    name={"confirmPassword"}
-                                    type={"password"}
-                                    placeholder={"Confirm New Password"}
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <Button type="submit">Save Password</Button>
-                            </form>
-                        </>
-                    ) :
-
-                    <div>{status}</div>
+        <Card>
+            <PasswordForm
+                onSubmit={handleAction}
+                header={
+                    <>
+                        <h2>Create New Password</h2>
+                        <p>Enter your new password below to regain access to your account.</p>
+                    </>
                 }
-            </Card>
-        </>
-    )
+                buttonText="Reset & Login"
+            />
+
+            {alert && (
+                <AlertModal
+                    type={alert.type}
+                    title={alert.title}
+                    onClose={alert.onClose || (() => setAlert(null))}
+                >
+                    <p>{alert.message}</p>
+                </AlertModal>
+            )}
+        </Card>
+    );
 }
 
 export default ResetPasswordPage;

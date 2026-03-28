@@ -3,7 +3,7 @@ import { useWebSocket } from "../../services/webSocket/WebSocketContext.js";
 import { useCallback, useEffect, useState } from "react";
 import RacePlayerPage from "./RacePlayerPage.jsx";
 import RaceHostPage from "./RaceHostPage.jsx";
-import { raceInfo } from "../../services/authService.js";
+import { getRaceInfo } from "../../services/raceService.js";
 
 function RacePage() {
     const location = useLocation();
@@ -16,8 +16,7 @@ function RacePage() {
 
     const checkInfo = useCallback(async () => {
         try {
-            const response = await raceInfo(roomCode);
-            console.log("כאן");
+            const response = await getRaceInfo(roomCode);
             console.log(response);
             if (response.success) {
                 setUserRole(response.data.host ? "HOST" : "PLAYER");

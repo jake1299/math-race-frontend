@@ -4,7 +4,6 @@ import Input from "../../components/ui/Input.jsx";
 import {useState, useContext} from "react";
 import {Link, useNavigate} from "react-router-dom";
 
-import "./Auth.css";
 import {login} from "../../services/authService.js";
 import { WebSocketContext } from "../../services/webSocket/WebSocketContext.js";
 
@@ -51,7 +50,7 @@ function LoginPage() {
                     <p>
                         To start playing and enjoy, just log in to your account first<br/>
                         If you don't have one, you can create one
-                        <Link to={`/register`}> here</Link>
+                        <Link to={`/auth/register`}> here</Link>
                     </p>
                 </div>
 

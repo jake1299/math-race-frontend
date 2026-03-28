@@ -4,7 +4,6 @@ import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import Input from "../../components/ui/Input.jsx";
 
-import "./Auth.css";
 import {register} from "../../services/authService.js";
 
 function RegisterPage() {
@@ -44,7 +43,7 @@ function RegisterPage() {
                     <p>
                         Ready to start? Create your profile to play<br/>
                         If you already have an account, you can log in
-                        <Link to={`/login`}> here</Link>
+                        <Link to={`/auth/login`}> here</Link>
                     </p>
                 </div>
 

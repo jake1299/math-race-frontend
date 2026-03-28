@@ -1,17 +1,28 @@
+import {useState} from "react";
 import {NavLink, Outlet} from "react-router-dom";
 
 import './MainLayout.css'
+import Button from "../components/ui/Button";
+import ProfileModal from "../pages/profile/ProfileModal";
 
 function MainLayout() {
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+    const user = {
+        email: "exemple@example.com",
+        username: "jon walker",
+    }
+
     return (
         <>
-            <nav className={"navbar"}>
+            <nav>
                 <ul>
                     <li>
-                        <NavLink to="/">Dashboard</NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/history">Game History</NavLink>
+                        <Button
+                            onClick={() => setIsProfileOpen(true)}
+                        >
+                            Profile
+                        </Button>
                     </li>
                 </ul>
             </nav>
@@ -19,6 +30,15 @@ function MainLayout() {
             <main>
                 <Outlet/>
             </main>
+
+            {
+                isProfileOpen && (
+                    <ProfileModal
+                        onClose={() => setIsProfileOpen(false)}
+                        user={user}
+                    />
+                )
+            }
         </>
     )
 }

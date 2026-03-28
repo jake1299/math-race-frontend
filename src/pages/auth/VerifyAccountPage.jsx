@@ -1,37 +1,36 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {verifyAccount} from "../../services/authService.js";
-import "./Auth.css";
+import {ClipLoader} from "react-spinners";
 
 function VerifyAccountPage() {
     const navigate = useNavigate();
     const { token } = useParams();
 
     const [status, setStatus] = useState('loading');
-    const [message, setMessage] = useState('מבצע אימות חשבון...🔄');
+    const [message, setMessage] = useState('Verifying your account...');
 
     useEffect(() => {
-
         const checkToken = async () => {
             try {
                 const response = await verifyAccount(token);
 
                 if (response.success === true) {
                     setStatus('success');
-                    setMessage('החשבון אומת בהצלחה! מיד תועבר לדף ההתחברות...');
+                    setMessage('Account verified successfully! Redirecting to login...');
 
                     setTimeout(() => {
-                        navigate('/login');
+                        navigate('/auth/login');
                     }, 3000);
 
                 } else {
                     setStatus('error');
-                    setMessage('הקישור פג תוקף או שאינו תקין.');
+                    setMessage('The link is invalid or has expired.');
                 }
             } catch (error) {
                 console.error("Error verifying token:", error);
                 setStatus('error');
-                setMessage('שגיאת תקשורת עם השרת.');
+                setMessage('Connection error. Please try again later.');
             }
         };
 
@@ -42,11 +41,19 @@ function VerifyAccountPage() {
 
     return (
         <>
-            <div className="verify-container">
-                <h2>אימות חשבון</h2>
+            <div>
+                <h2>Account Verification</h2>
 
-                <div className={`status-message ${status}`}>
-                    {message}
+                <div>
+                    {
+                        status === 'loading' && (
+                            <div>
+                                <ClipLoader/>
+                            </div>
+                        )
+                    }
+
+                    <p>{message}</p>
                 </div>
 
             </div>

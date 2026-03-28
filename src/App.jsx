@@ -7,13 +7,11 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
-import GameHistoryPage from "./pages/history/GameHistoryPage.jsx";
-import GameDetailsPage from "./pages/history/GameDetailsPage.jsx";
 import JoinRacePage from "./pages/race/JoinRacePage.jsx";
 import VerifyAccountPage from "./pages/auth/VerifyAccountPage.jsx";
 import ChangePasswordPage from "./pages/auth/ChangePasswordPage.jsx";
 import WebSocketProvider from "./services/webSocket/WebSocketProvider.jsx";
-import CreatRacePage from "./pages/race/CreatRacePage.jsx";
+import CreateRacePage from "./pages/race/CreateRacePage.jsx";
 import RacePage from "./pages/race/RacePage.jsx";
 
 function App() {
@@ -22,21 +20,24 @@ function App() {
         <WebSocketProvider>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/login" element={<LoginPage/>}/>
-                    <Route path="/register" element={<RegisterPage/>}/>
-                    <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
-                    <Route path="/change-password" element={<ChangePasswordPage/>}/>
-                    <Route path="/reset-password/:token" element={<ResetPasswordPage/>}/>
-                    <Route path="/verify/:token" element={<VerifyAccountPage/>}/>
 
-                    <Route path="/race/join" element={<JoinRacePage/>}/>
-                    <Route path="/race/create" element={<CreatRacePage/>}/>
-                    <Route path="/race/:roomCode" element={<RacePage/>}/>
+                    <Route path={"/auth"}>
+                        <Route path={"login"} element={<LoginPage/>}/>
+                        <Route path={"register"} element={<RegisterPage/>}/>
+                        <Route path={"forgot-password"} element={<ForgotPasswordPage/>}/>
+                        <Route path={"change-password"} element={<ChangePasswordPage/>}/>
+                        <Route path={"reset-password/:token"} element={<ResetPasswordPage/>}/>
+                        <Route path={"verify/:token"} element={<VerifyAccountPage/>}/>
+                    </Route>
+
+                    <Route path={"/race"}>
+                        <Route path="join" element={<JoinRacePage/>}/>
+                        <Route path="create" element={<CreateRacePage/>}/>
+                        <Route path=":roomCode" element={<RacePage/>}/>
+                    </Route>
 
                     <Route element={<MainLayout/>}>
-                        <Route path="/" element={<DashboardPage/>}/>
-                        <Route path="/history" element={<GameHistoryPage/>}/>
-                        <Route path="/history/:gameId" element={<GameDetailsPage/>}/>
+                        <Route path={"/"} element={<DashboardPage/>}/>
                     </Route>
                 </Routes>
             </BrowserRouter>
@@ -44,4 +45,7 @@ function App() {
     )
 }
 
-export default App
+export default App;
+
+{/*<Route path="/history" element={<GameHistoryPage/>}/>*/}
+{/*<Route path="/history/:gameId" element={<GameDetailsPage/>}/>*/}

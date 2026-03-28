@@ -1,14 +1,13 @@
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
 
-import './Dashboard.css'
 import {useNavigate} from "react-router-dom";
 
 function DashboardPage() {
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
-        navigate("/race/"+e.target.name);
+        navigate("/race/" + e.target.name);
     }
 
     return (
@@ -17,19 +16,21 @@ function DashboardPage() {
                 <h1>Mate Race</h1>
             </div>
 
-            <div className={"dashboard-items"}>
+            <div>
                 <Card>
                     <h2>Create a Race</h2>
                     <p>
-                        Create a new room and select your preferred difficulty level. Share the unique code with others so they can join, and watch the race unfold in real time
+                        Create a new room and select your preferred difficulty level. Share the unique code with others
+                        so they can join, and watch the race unfold in real time
                     </p>
                     <Button name={"create"} onClick={handleSubmit}>Create Race</Button>
                 </Card>
 
                 <Card>
                     <h2>Join the Race</h2>
-                    <p>Got a room code? Then what are you waiting for! Click the button below, follow the instructions, and start playing!</p>
-                    <Button  name={"join"} onClick={handleSubmit}>Join Race</Button>
+                    <p>Got a room code? Then what are you waiting for! Click the button below, follow the instructions,
+                        and start playing!</p>
+                    <Button name={"join"} onClick={handleSubmit}>Join Race</Button>
                 </Card>
             </div>
         </>

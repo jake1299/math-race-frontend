@@ -4,7 +4,6 @@ import Input from "../../components/ui/Input.jsx";
 import Button from "../../components/ui/Button.jsx";
 import {useState} from "react";
 
-import "./Auth.css";
 import {forgotPassword} from "../../services/authService.js";
 
 function ForgotPasswordPage() {
@@ -32,7 +31,7 @@ function ForgotPasswordPage() {
                 <p>
                     Don't worry, it happens! Enter your email address below and we'll send you a reset link<br/>
                     If you remember your password, you can return to the login page
-                    <Link to={`/login`}> here</Link>
+                    <Link to={`/auth/login`}> here</Link>
                 </p>
 
                 <form onSubmit={handleSubmit}>

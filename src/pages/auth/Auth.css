@@ -1,9 +1,0 @@
-.auth-card {
-    gap: 10px;
-}
-
-.auth-card form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
