@@ -8,6 +8,8 @@ import Button from "../../components/ui/Button.jsx";
 import { createRace } from "../../services/raceService.js";
 import { ALERT_TYPES, AlertModal } from "../../components/ui/AlertModal.jsx";
 import { ClipLoader } from "react-spinners";
+import logo from "../../assets/logo.png";
+import './RaceForms.css';
 
 const INITIAL_STATE = {
     name: "",
@@ -108,14 +110,21 @@ function CreateRacePage() {
     };
 
     return (
-        <div style={{ width: '100%', padding: '20px 0' }}>
-            <Card className="global-auth-card">
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    <h2 style={{ fontSize: '2.5rem', margin: '0 0 10px 0' }}>Create Race</h2>
-                    <p style={{ opacity: 0.8, margin: 0 }}>Fill in the details to create a race!</p>
+        <div className="page-wrapper">
+            <Card className="game-card-styled theme-red">
+                <div >
+
+                    <img
+                        src={logo}
+                        alt="Math Race Logo"
+                        className="dashboard-logo"
+                    />
+
+                    <h2 >Create Race</h2>
+                    <p >Fill in the details to create a race!</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="global-form-stack">
+                <form onSubmit={handleSubmit} >
                     <Input
                         name={"name"}
                         type={"text"}
@@ -136,24 +145,24 @@ function CreateRacePage() {
                         required
                     />
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', fontWeight: 'bold', fontSize: '1.2rem' }}>
+                    <div className="checkbox-container">
                         <input
                             id="isPrivate"
                             name="isPrivate"
                             type="checkbox"
                             checked={formData.isPrivate}
                             onChange={handleChange}
-                            style={{ width: '24px', height: '24px', accentColor: 'var(--primary)', cursor: 'pointer' }}
+                            
                         />
-                        <label htmlFor="isPrivate" style={{ cursor: 'pointer' }}>Private Race?</label>
-                        <span style={{ opacity: 0.7, fontWeight: 'normal', fontSize: '1rem' }}>{formData.isPrivate ? "(Only with code)" : "(Public list)"}</span>
+                        <label htmlFor="isPrivate" >Private Race?</label>
+                        <span >{formData.isPrivate ? "(Only with code)" : "(Public list)"}</span>
                     </div>
 
-                    <Button className="global-btn-success" type={"submit"} disabled={isSubmitting}>
+                    <Button  type={"submit"} disabled={isSubmitting}>
                         {isSubmitting ? <ClipLoader /> : "Create Race"}
                     </Button>
 
-                    <Button className="global-btn-secondary" type={"button"} onClick={() => navigate("/")}>
+                    <Button  type={"button"} onClick={() => navigate("/")}>
                         Back to Home
                     </Button>
                 </form>

@@ -9,7 +9,8 @@ import { ClipLoader } from "react-spinners";
 
 import { joinRace } from "../../services/raceService.js";
 import { useWebSocket } from "../../services/webSocket/WebSocketContext.js";
-
+import logo from "../../assets/logo.png";
+import './RaceForms.css';
 const INITIAL_STATE = {
     roomCode: "",
     nickname: "",
@@ -109,14 +110,21 @@ function JoinRacePage() {
     }
 
     return (
-        <div style={{ width: '100%', padding: '20px 0' }}>
-            <Card className="global-auth-card">
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    <h2 style={{ fontSize: '2.5rem', margin: '0 0 10px 0' }}>Join the Race</h2>
-                    <p style={{ opacity: 0.8, margin: 0 }}>Got a room code? Enter it below and start playing!</p>
+        <div className="page-wrapper">
+            <Card className="game-card-styled theme-yellow">
+                <div >
+
+                    <img
+                        src={logo}
+                        alt="Math Race Logo"
+                        className="dashboard-logo"
+                    />
+
+                    <h2 >Join the Race</h2>
+                    <p >Got a room code? Enter it below and start playing!</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="global-form-stack">
+                <form onSubmit={handleSubmit} >
                     <Input
                         name={"roomCode"}
                         type={"text"}
@@ -134,11 +142,11 @@ function JoinRacePage() {
                         onChange={handleChange}
                     />
 
-                    <Button className="global-btn-success" type={"submit"} disabled={isSubmitting}>
+                    <Button  type={"submit"} disabled={isSubmitting}>
                         {isSubmitting ? <ClipLoader size={20} color="#fff" /> : "Join Room"}
                     </Button>
 
-                    <Button className="global-btn-secondary" type={"button"} onClick={() => navigate("/")}>
+                    <Button  type={"button"} onClick={() => navigate("/")}>
                         Back to Home
                     </Button>
                 </form>

@@ -1,10 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Button from "../../components/ui/Button.jsx";
-import { AlertModal } from "../../components/ui/AlertModal.jsx";
+import {AlertModal} from "../../components/ui/AlertModal.jsx";
 
-function ProfileModal({ onClose, user }) {
+import './ProfileModal.css';
+
+function ProfileModal({onClose, user}) {
     const navigate = useNavigate();
-    const { username, email } = user;
+    const {username, email} = user;
 
     const handleNavigation = (path) => {
         onClose();
@@ -13,32 +15,34 @@ function ProfileModal({ onClose, user }) {
 
     return (
         <AlertModal title="My Profile" onClose={onClose}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                <div
-                    className="global-circle-avatar"
-                    style={{ width: '80px', height: '80px', fontSize: '3rem', marginBottom: '10px', background: 'rgba(0,0,0,0.05)', color: '#333', borderColor: 'transparent' }}
-                >
+            <div className="profile-content">
+                <div className="profile-avatar">
                     {username ? username.substring(0, 1).toUpperCase() : '👤'}
                 </div>
-                <h3 style={{ margin: 0, fontSize: '1.5rem' }}>{username}</h3>
-                <p style={{ margin: 0, opacity: 0.7 }}>{email}</p>
+                <h3 className="profile-name">{username}</h3>
+                <p className="profile-email">{email}</p>
             </div>
 
-            <hr style={{ border: 'none', borderBottom: '1px solid rgba(0,0,0,0.1)', margin: '24px 0' }} />
+            <hr className="profile-divider"/>
 
-            <div className="global-form-stack">
+            <div className="profile-actions">
                 <Button onClick={() => handleNavigation('/history')}>
                     View Game History
                 </Button>
-                <Button className="global-btn-secondary" onClick={() => handleNavigation('/auth/change-password')}>
+
+                <div className="settings-divider">
+                    <span>Settings</span>
+                </div>
+
+                <Button className="btn-settings" onClick={() => handleNavigation('/auth/change-password')}>
                     Change Password
                 </Button>
 
-                <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
-                    <Button className="global-btn-danger" onClick={onClose}>
+                <div className="profile-danger-zone">
+                    <Button className="btn-logout" onClick={onClose}>
                         Logout
                     </Button>
-                    <Button className="global-btn-outline-danger" onClick={onClose}>
+                    <Button className="btn-delete" onClick={onClose}>
                         Delete Account
                     </Button>
                 </div>

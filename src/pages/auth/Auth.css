@@ -1,0 +1,42 @@
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.page-wrapper img {
+    margin-bottom: 8px;
+}
+
+.page-wrapper form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.page-wrapper form button {
+    margin-top: 16px;
+}
+
+.page-wrapper a {
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.page-wrapper a:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
+.page-wrapper form a {
+    font-size: 14px;
+    align-self: flex-end;
+}

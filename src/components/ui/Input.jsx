@@ -1,8 +1,9 @@
 import './Input.css';
-function Input({ style, className, ...props }) {
+
+function Input({ style, ...props }) {
     return (
-        <div className="global-input-container">
-            <input className={`global-input ${className || ''}`} style={style} {...props} />
+        <div >
+            <input style={style} {...props} />
         </div>
     )
 }

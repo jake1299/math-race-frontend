@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import {AlertModal, ALERT_TYPES} from "../ui/AlertModal";
+import logo from "../../assets/logo.png";
 
 function PasswordForm({header, onSubmit, buttonText = "Save Password"}) {
     const [formData, setFormData] = useState({password: "", confirmPassword: ""});
@@ -50,8 +51,15 @@ function PasswordForm({header, onSubmit, buttonText = "Save Password"}) {
     };
 
     return (
-        <div className="password-form-container">
-            <div className="form-header-slot">
+        <div >
+            <div >
+
+                <img
+                    src={logo}
+                    alt="Math Race Logo"
+                    className="dashboard-logo"
+                />
+
                 {header}
             </div>
 

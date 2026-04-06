@@ -1,11 +1,14 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { verifyAccount } from "../../services/authService.js";
-import { ClipLoader } from "react-spinners";
+import {useParams, useNavigate} from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {verifyAccount} from "../../services/authService.js";
+import {ClipLoader} from "react-spinners";
+
+import './Auth.css'
+import Card from "../../components/ui/Card.jsx";
 
 function VerifyAccountPage() {
     const navigate = useNavigate();
-    const { token } = useParams();
+    const {token} = useParams();
 
     const [status, setStatus] = useState('loading');
     const [message, setMessage] = useState('Verifying your account...');
@@ -40,24 +43,20 @@ function VerifyAccountPage() {
     }, [navigate, token]);
 
     return (
-        <>
-            <div>
+        <div className="page-wrapper">
+
+            <Card className="theme-yellow">
                 <h2>Account Verification</h2>
-
-                <div>
-                    {
-                        status === 'loading' && (
-                            <div>
-                                <ClipLoader />
-                            </div>
-                        )
-                    }
-
-                    <p>{message}</p>
-                </div>
-
-            </div>
-        </>
+                {
+                    status === 'loading' && (
+                        <div>
+                            <ClipLoader/>
+                        </div>
+                    )
+                }
+                <p>{message}</p>
+            </Card>
+        </div>
     );
 }
 

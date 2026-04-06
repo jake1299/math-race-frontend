@@ -1,10 +1,13 @@
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
 import Input from "../../components/ui/Input.jsx";
 
-import { register } from "../../services/authService.js";
+import {register} from "../../services/authService.js";
+
+import './Auth.css'
+import logo from "../../assets/logo.png";
 
 function RegisterPage() {
     const navigate = useNavigate();
@@ -15,7 +18,7 @@ function RegisterPage() {
     });
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value
@@ -36,18 +39,26 @@ function RegisterPage() {
     };
 
     return (
-        <>
-            <Card className="global-auth-card">
-                <div style={{ textAlign: 'center' }}>
-                    <h2>Welcome</h2>
+        <div className="page-wrapper">
+
+            <Card className="theme-green" >
+                <div>
+
+                    <img
+                        src={logo}
+                        alt="Math Race Logo"
+                        className="dashboard-logo"
+                    />
+
+                    <h2>Welcome!</h2>
                     <p>
-                        Ready to start? Create your profile to play<br />
+                        Ready to start? Create your profile to play<br/>
                         If you already have an account, you can log in
                         <Link to={`/auth/login`}> here</Link>
                     </p>
                 </div>
 
-                <form className="global-form-stack" onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                     <Input
                         name={"username"}
                         placeholder={"Username"}
@@ -74,7 +85,7 @@ function RegisterPage() {
                     <Button type="submit">Create Account</Button>
                 </form>
             </Card>
-        </>
+        </div>
     )
 }
 

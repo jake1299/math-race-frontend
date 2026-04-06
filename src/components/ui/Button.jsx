@@ -1,7 +1,8 @@
 import './Button.css';
-function Button({ children, style, className, ...props }) {
+
+function Button({ children, style, ...props }) {
     return (
-        <button className={`global-btn ${className || ''}`} style={style} {...props}>
+        <button style={style} {...props}>
             {children}
         </button>
     )

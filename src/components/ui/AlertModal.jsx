@@ -1,5 +1,7 @@
-import './AlertModal.css';
+
 import { useRef, useEffect } from 'react';
+
+import './AlertModal.css';
 
 const ALERT_TYPES = {
     SUCCESS: 'success',
@@ -21,10 +23,10 @@ function AlertModal({ type = ALERT_TYPES.INFO, title, children, onClose }) {
         <dialog
             ref={dialogRef}
             onClose={onClose}
-            className="global-dialog"
+            className={`alert-modal alert-${type}`}
         >
             <button
-                className="global-dialog-close-btn"
+                className="alert-close-btn"
                 onClick={() => {
                     dialogRef.current?.close();
                 }}
@@ -32,7 +34,7 @@ function AlertModal({ type = ALERT_TYPES.INFO, title, children, onClose }) {
                 ✕
             </button>
 
-            <h2 style={{ marginTop: 0 }}>{title}</h2>
+            <h2 >{title}</h2>
 
             <div>
                 {children}
