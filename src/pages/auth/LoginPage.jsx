@@ -1,10 +1,10 @@
 import Card from "../../components/ui/Card.jsx";
 import Button from "../../components/ui/Button.jsx";
 import Input from "../../components/ui/Input.jsx";
-import {useState, useContext} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import {login} from "../../services/authService.js";
+import { login } from "../../services/authService.js";
 import { WebSocketContext } from "../../services/webSocket/WebSocketContext.js";
 
 function LoginPage() {
@@ -16,7 +16,7 @@ function LoginPage() {
     });
 
     const handleChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value
@@ -33,8 +33,7 @@ function LoginPage() {
                 console.log("Logged in successfully!");
                 updateToken(response.data.token, response.data.dayToSaveToken);
                 navigate("/");
-
-            }else {
+            } else {
                 console.log("Login failed : " + response.message);
             }
         } catch (err) {
@@ -44,17 +43,17 @@ function LoginPage() {
 
     return (
         <>
-            <Card className={"auth-card"}>
-                <div>
+            <Card className="global-auth-card">
+                <div style={{ textAlign: 'center' }}>
                     <h2>Welcome back!</h2>
                     <p>
-                        To start playing and enjoy, just log in to your account first<br/>
+                        To start playing and enjoy, just log in to your account first<br />
                         If you don't have one, you can create one
                         <Link to={`/auth/register`}> here</Link>
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit}>
+                <form className="global-form-stack" onSubmit={handleSubmit}>
                     <Input
                         name={"email"}
                         type={"email"}
@@ -71,7 +70,7 @@ function LoginPage() {
                         onChange={handleChange}
                         required
                     />
-                    <Link to={"/forgot-password"}>Forgot password?</Link>
+                    <Link to={"/auth/forgot-password"}>Forgot password?</Link>
                     <Button type="submit">Sign in</Button>
                 </form>
             </Card>

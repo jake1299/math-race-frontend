@@ -5,6 +5,7 @@ import RaceLobby from "../../components/race/RaceLobby.jsx";
 import RaceActiveHost from "../../components/race/RaceActiveHost.jsx";
 import RaceResults from "../../components/race/RaceResults.jsx";
 import RaceActivePlayer from "../../components/race/RaceActivePlayer.jsx";
+import {ClipLoader} from "react-spinners";
 
 function RacePlayerPage({ roomCode, joinToken, accountId }) {
     const navigate = useNavigate();
@@ -14,7 +15,6 @@ function RacePlayerPage({ roomCode, joinToken, accountId }) {
 
 
     useEffect(() => {
-        // צריך בקשה לשלוח את כל הנתונים כל המירוץ קודם כל
         const queue = `/user/queue/race/feedback`;
 
         const unsubscribeQueue = subscribe(queue, (data) => {
@@ -163,7 +163,14 @@ function RacePlayerPage({ roomCode, joinToken, accountId }) {
         });
     };
 
-    if (!raceState) return <div>טוען נתוני מרוץ...</div>;
+    if (!raceState) {
+        return (
+            <div>
+                <ClipLoader/>
+                <p>Loading race data...</p>
+            </div>
+        );
+    }
 
     switch (raceState.status) {
         case 'PENDING':
@@ -174,8 +181,7 @@ function RacePlayerPage({ roomCode, joinToken, accountId }) {
         case 'FINISHED':
             return <RaceResults players={raceState.players} />;
         default:
-            return <div>סטטוס מירוץ לא חוקי: {raceState.status}</div>;
-    }
+            return <div>Invalid race status: {raceState.status}</div>;    }
 }
 
 export default RacePlayerPage;

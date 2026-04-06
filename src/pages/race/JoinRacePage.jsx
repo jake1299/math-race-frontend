@@ -1,14 +1,14 @@
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button.jsx";
 import Input from "../../components/ui/Input.jsx";
 import Card from "../../components/ui/Card.jsx";
-import {ALERT_TYPES, AlertModal} from "../../components/ui/AlertModal.jsx";
+import { ALERT_TYPES, AlertModal } from "../../components/ui/AlertModal.jsx";
 
-import {ClipLoader} from "react-spinners";
+import { ClipLoader } from "react-spinners";
 
-import {joinRace} from "../../services/raceService.js";
-import {useWebSocket} from "../../services/webSocket/WebSocketContext.js";
+import { joinRace } from "../../services/raceService.js";
+import { useWebSocket } from "../../services/webSocket/WebSocketContext.js";
 
 const INITIAL_STATE = {
     roomCode: "",
@@ -21,7 +21,7 @@ function JoinRacePage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [alert, setAlert] = useState(null);
 
-    const {clearError, clearLastMessage} = useWebSocket();
+    const { clearError, clearLastMessage } = useWebSocket();
 
     useEffect(() => {
         if (!alert) return;
@@ -39,7 +39,7 @@ function JoinRacePage() {
     }, [alert, navigate])
 
     const handleChange = (e) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value
@@ -58,9 +58,9 @@ function JoinRacePage() {
         try {
             const response = await joinRace(formData);
             if (response.success) {
-                const {code, joinToken} = response.data;
+                const { code, joinToken } = response.data;
                 navigate("/race/" + code, {
-                    state: {joinToken: joinToken}
+                    state: { joinToken: joinToken }
                 });
             } else {
                 handleBackendError(response);
@@ -109,47 +109,51 @@ function JoinRacePage() {
     }
 
     return (
-        <Card className={"form-race"}>
-            <h2>Join the Race</h2>
-            <p>Got a room code? Enter it below and start playing!</p>
+        <div style={{ width: '100%', padding: '20px 0' }}>
+            <Card className="global-auth-card">
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    <h2 style={{ fontSize: '2.5rem', margin: '0 0 10px 0' }}>Join the Race</h2>
+                    <p style={{ opacity: 0.8, margin: 0 }}>Got a room code? Enter it below and start playing!</p>
+                </div>
 
-            <form onSubmit={handleSubmit}>
-                <Input
-                    name={"roomCode"}
-                    type={"text"}
-                    placeholder={"Room Code"}
-                    value={formData.roomCode}
-                    onChange={handleChange}
-                    required
-                />
+                <form onSubmit={handleSubmit} className="global-form-stack">
+                    <Input
+                        name={"roomCode"}
+                        type={"text"}
+                        placeholder={"Room Code"}
+                        value={formData.roomCode}
+                        onChange={handleChange}
+                        required
+                    />
 
-                <Input
-                    name={"nickname"}
-                    type={"text"}
-                    placeholder={"Nickname"}
-                    value={formData.nickname}
-                    onChange={handleChange}
-                />
+                    <Input
+                        name={"nickname"}
+                        type={"text"}
+                        placeholder={"Nickname"}
+                        value={formData.nickname}
+                        onChange={handleChange}
+                    />
 
-                <Button type={"submit"} disabled={isSubmitting}>
-                    {isSubmitting ? <ClipLoader/> : "Join Room"}
-                </Button>
+                    <Button className="global-btn-success" type={"submit"} disabled={isSubmitting}>
+                        {isSubmitting ? <ClipLoader size={20} color="#fff" /> : "Join Room"}
+                    </Button>
 
-                <Button type={"button"} onClick={() => navigate("/")}>
-                    Back to Home
-                </Button>
-            </form>
+                    <Button className="global-btn-secondary" type={"button"} onClick={() => navigate("/")}>
+                        Back to Home
+                    </Button>
+                </form>
 
-            {alert && (
-                <AlertModal
-                    type={alert.type}
-                    title={alert.title}
-                    onClose={alert.onClose || (() => setAlert(null))}
-                >
-                    <p>{alert.message}</p>
-                </AlertModal>
-            )}
-        </Card>
+                {alert && (
+                    <AlertModal
+                        type={alert.type}
+                        title={alert.title}
+                        onClose={alert.onClose || (() => setAlert(null))}
+                    >
+                        <p>{alert.message}</p>
+                    </AlertModal>
+                )}
+            </Card>
+        </div>
     );
 }
 

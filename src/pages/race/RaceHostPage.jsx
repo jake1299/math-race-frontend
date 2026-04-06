@@ -1,13 +1,14 @@
-import { useNavigate } from "react-router-dom";
-import { useWebSocket } from "../../services/webSocket/WebSocketContext.js";
+import {useNavigate} from "react-router-dom";
+import {useWebSocket} from "../../services/webSocket/WebSocketContext.js";
 import {useEffect, useRef, useState} from "react";
 import RaceLobby from "../../components/race/RaceLobby";
 import RaceResults from "../../components/race/RaceResults";
 import RaceActiveHost from "../../components/race/RaceActiveHost.jsx";
+import {ClipLoader} from "react-spinners";
 
-function RaceHostPage({ roomCode , joinToken}) {
+function RaceHostPage({roomCode, joinToken}) {
     const navigate = useNavigate();
-    const { isConnected, lastMessage, clearLastMessage, sendMessage, subscribe } = useWebSocket();
+    const {isConnected, lastMessage, clearLastMessage, sendMessage, subscribe} = useWebSocket();
     const [raceState, setRaceState] = useState(null);
     const hasSynced = useRef(false);
 
@@ -15,8 +16,6 @@ function RaceHostPage({ roomCode , joinToken}) {
         const queue = `/user/queue/race/host`;
 
         const unsubscribe = subscribe(queue, (data) => {
-            console.log("קיבלנו הודעה חדשה מהסוקט:", data);
-
             if (data.type === 'RACE_FULL_STATE') {
                 setRaceState(data.data);
             } else if (data.type === 'PLAYER_JOINED') {
@@ -43,7 +42,7 @@ function RaceHostPage({ roomCode , joinToken}) {
                             p.id === data.data.id ? {
                                 ...p,
                                 online: data.data.online,
-                                nickname : data.data.nickname
+                                nickname: data.data.nickname
                             } : p
                         )
                     };
@@ -57,7 +56,7 @@ function RaceHostPage({ roomCode , joinToken}) {
                         status: data.data.status
                     }
                 })
-            } else if (data.type === 'RACE_COMPLETED'){
+            } else if (data.type === 'RACE_COMPLETED') {
                 setRaceState(prevState => {
                     if (!prevState) return null;
                     return {
@@ -66,7 +65,7 @@ function RaceHostPage({ roomCode , joinToken}) {
                         players: data.data.players
                     }
                 })
-            }else if (data.type === 'PLAYER_ANSWERED_CORRECTLY' || data.type === 'PLAYER_ANSWERED_INCORRECTLY' || data.type === 'PLAYER_TIMEOUT') {
+            } else if (data.type === 'PLAYER_ANSWERED_CORRECTLY' || data.type === 'PLAYER_ANSWERED_INCORRECTLY' || data.type === 'PLAYER_TIMEOUT') {
                 setRaceState(prevState => {
                     if (!prevState) return null;
                     return {
@@ -76,10 +75,10 @@ function RaceHostPage({ roomCode , joinToken}) {
                                 ...p,
                                 currentScore: p.currentScore + data.data.score,
                             } : p)
-                        };
+                    };
                 });
             }
-        },joinToken);
+        }, joinToken);
 
         if (!hasSynced.current) {
             sendMessage(`/app/race/${roomCode}/host/sync`, {});
@@ -89,7 +88,7 @@ function RaceHostPage({ roomCode , joinToken}) {
             if (unsubscribe) unsubscribe();
             hasSynced.current = false;
         };
-    }, [isConnected, roomCode, sendMessage, subscribe,joinToken]);
+    }, [isConnected, roomCode, sendMessage, subscribe, joinToken]);
 
     useEffect(() => {
         if (lastMessage) {
@@ -102,24 +101,29 @@ function RaceHostPage({ roomCode , joinToken}) {
         }
     }, [lastMessage, navigate, clearLastMessage]);
 
-    // פונקציה להתחלת המירוץ שנעביר למסך ההמתנה
     const handleStartRace = () => {
         sendMessage(`/app/race/${roomCode}/host/start`, {});
     };
 
-    if (!raceState) return <div>טוען נתוני מרוץ...</div>;
+    if (!raceState) {
+        return (
+            <div>
+                <ClipLoader/>
+                <p>Loading race data...</p>
+            </div>
+        );
+    }
 
-    // ניתוב התצוגה לפי סטטוס המירוץ
     switch (raceState.status) {
         case 'PENDING':
-            return <RaceLobby raceState={raceState} onStartRace={handleStartRace} isHost={true} />;
+            return <RaceLobby raceState={raceState} onStartRace={handleStartRace} isHost={true}/>;
         case 'PAUSED':
         case 'IN_PROGRESS':
-            return <RaceActiveHost raceState={raceState} />;
+            return <RaceActiveHost raceState={raceState}/>;
         case 'FINISHED':
-            return <RaceResults players={raceState.players} />;
+            return <RaceResults players={raceState.players}/>;
         default:
-            return <div>סטטוס מירוץ לא חוקי: {raceState.status}</div>;
+            return <div>Invalid race status: {raceState.status}</div>;
     }
 }
 

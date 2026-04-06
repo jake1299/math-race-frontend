@@ -1,13 +1,30 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Nunito', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 600;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
 
-  --text-color: rgba(255, 255, 255, 0.87);
+  /* Children Playful Palette */
+  --primary: #4361EE;
+  /* Vibrant Blue */
+  --primary-hover: #3A56D4;
+  --secondary: #FFB703;
+  /* Cheerful Yellow/Orange */
+  --secondary-hover: #EAA800;
+  --success: #4CAF50;
+  /* Green */
+  --danger: #EF233C;
+  /* Red */
+  --accent: #7209B7;
+  /* Purple focus */
+  --text-main: #2B2D42;
+  /* Dark slate blue for distinct reading */
+  --bg-color: #ffffff;
+  /* Explicit White background */
+
+  color: var(--text-main);
+  background-color: var(--bg-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,6 +37,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -31,6 +49,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-main);
 }
 
 h1 {
@@ -49,9 +69,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -59,15 +81,62 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: var(--text-main);
+    background-color: var(--bg-color);
+  }
 
-    --text-color: rgba(0, 0, 0, 0.87);
-  }
   a:hover {
-    color: #747bff;
+    color: var(--primary-hover);
   }
+
   button {
-    background-color: #f9f9f9;
+    background-color: var(--primary);
   }
+}
+
+/* ---------------- Layout & Grid utilities ---------------- */
+.global-center-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.global-grid-2-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.global-circle-avatar {
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--secondary);
+  font-weight: 800;
+  font-size: 1.5rem;
+  background-color: white;
+  color: var(--text-main);
+  box-shadow: 0 4px 0 var(--secondary-hover);
+}
+
+/* ---------------- Forms & Auth layout ---------------- */
+.global-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.global-auth-card {
+  max-width: 450px;
+  margin: 0 auto;
 }

@@ -1,10 +1,9 @@
-function Input({style, ...props}) {
+import './Input.css';
+function Input({ style, className, ...props }) {
     return (
-        <input style={{
-            borderRadius: '12px',
-            padding: '10px',
-            ...style,
-        }} {...props}/>
+        <div className="global-input-container">
+            <input className={`global-input ${className || ''}`} style={style} {...props} />
+        </div>
     )
 }
 

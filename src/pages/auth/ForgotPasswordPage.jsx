@@ -1,10 +1,10 @@
 import Card from "../../components/ui/Card.jsx";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Input from "../../components/ui/Input.jsx";
 import Button from "../../components/ui/Button.jsx";
-import {useState} from "react";
+import { useState } from "react";
 
-import {forgotPassword} from "../../services/authService.js";
+import { forgotPassword } from "../../services/authService.js";
 
 function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
@@ -27,26 +27,26 @@ function ForgotPasswordPage() {
         <>
             <Card className="auth-card">
                 {status === "Waiting" ? <>
-                <h2>Forgot your password?</h2>
-                <p>
-                    Don't worry, it happens! Enter your email address below and we'll send you a reset link<br/>
-                    If you remember your password, you can return to the login page
-                    <Link to={`/auth/login`}> here</Link>
-                </p>
+                    <h2>Forgot your password?</h2>
+                    <p>
+                        Don't worry, it happens! Enter your email address below and we'll send you a reset link<br />
+                        If you remember your password, you can return to the login page
+                        <Link to={`/auth/login`}> here</Link>
+                    </p>
 
-                <form onSubmit={handleSubmit}>
-                    <Input
-                        name={"email"}
-                        type={"email"}
-                        placeholder={"Email"}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    <Button type="submit">Send Reset Link</Button>
-                </form>
+                    <form onSubmit={handleSubmit}>
+                        <Input
+                            name={"email"}
+                            type={"email"}
+                            placeholder={"Email"}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                        <Button type="submit">Send Reset Link</Button>
+                    </form>
                 </> :
-                    <div>{status }</div>
+                    <div>{status}</div>
                 }
             </Card>
         </>

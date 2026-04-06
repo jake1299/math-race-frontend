@@ -12,20 +12,20 @@ function GameHistoryPage() {
     ];
 
     return (
-        <div>
-            <div>
-                <h2>Race History</h2>
-                <Button type="button" onClick={() => navigate("/")}>
-                    Back to Dashboard
+        <div style={{ width: '100%' }}>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+                <h2 style={{ margin: 0 }}>Race History</h2>
+                <Button className="global-btn-secondary" style={{ width: 'auto' }} type="button" onClick={() => navigate("/")}>
+                    Dashboard
                 </Button>
-            </div>
+            </header>
 
             {games.length > 0 ? (
                 <HistoryList games={games} />
             ) : (
-                <div>
+                <div className="global-card" style={{ textAlign: 'center' }}>
                     <p>You haven't participated in any races yet.</p>
-                    <Button onClick={() => navigate("/race/join")}>Join Your First Race</Button>
+                    <Button className="global-btn-success" onClick={() => navigate("/race/join")}>Join Your First Race</Button>
                 </div>
             )}
         </div>

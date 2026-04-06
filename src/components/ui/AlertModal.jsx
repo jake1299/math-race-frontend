@@ -1,4 +1,5 @@
-import {useRef, useEffect} from 'react';
+import './AlertModal.css';
+import { useRef, useEffect } from 'react';
 
 const ALERT_TYPES = {
     SUCCESS: 'success',
@@ -6,7 +7,7 @@ const ALERT_TYPES = {
     INFO: 'info',
 }
 
-function AlertModal({type = ALERT_TYPES.INFO, title, children, onClose}) {
+function AlertModal({ type = ALERT_TYPES.INFO, title, children, onClose }) {
     const dialogRef = useRef(null);
 
     useEffect(() => {
@@ -19,9 +20,19 @@ function AlertModal({type = ALERT_TYPES.INFO, title, children, onClose}) {
     return (
         <dialog
             ref={dialogRef}
-            onClose={onClose}>
+            onClose={onClose}
+            className="global-dialog"
+        >
+            <button
+                className="global-dialog-close-btn"
+                onClick={() => {
+                    dialogRef.current?.close();
+                }}
+            >
+                ✕
+            </button>
 
-            <h2>{title}</h2>
+            <h2 style={{ marginTop: 0 }}>{title}</h2>
 
             <div>
                 {children}

@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import {verifyAccount} from "../../services/authService.js";
-import {ClipLoader} from "react-spinners";
+import { verifyAccount } from "../../services/authService.js";
+import { ClipLoader } from "react-spinners";
 
 function VerifyAccountPage() {
     const navigate = useNavigate();
@@ -48,7 +48,7 @@ function VerifyAccountPage() {
                     {
                         status === 'loading' && (
                             <div>
-                                <ClipLoader/>
+                                <ClipLoader />
                             </div>
                         )
                     }

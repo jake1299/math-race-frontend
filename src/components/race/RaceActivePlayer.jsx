@@ -1,7 +1,9 @@
 import React, { memo, useState, useEffect } from 'react';
 import Button from "../ui/Button.jsx";
+import Card from "../ui/Card.jsx";
+import './Race.css';
 
-function RaceActivePlayer({ raceState, accountId , onAnswerQuestion}) {
+function RaceActivePlayer({ raceState, accountId, onAnswerQuestion }) {
     const player = raceState.players.find(p => p.id === accountId);
     const question = player?.currentQuestion;
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,37 +35,35 @@ function RaceActivePlayer({ raceState, accountId , onAnswerQuestion}) {
 
     }, [question]);
 
-    if (!player) return <div>טוען נתוני שחקן...</div>;
-    if (!question) return <div>ממתין לשאלה הבאה...</div>;
+    if (!player) return <div>Loading player data...</div>;
+    if (!question) return <div>Waiting for the next question...</div>;
 
-    // המרות ממילי-שניות לשניות שלמות לתצוגה יפה
-    const totalSeconds = Math.round(question.timeLimitMillis / 1000);
     const remainingSeconds = Math.ceil(timeLeft / 1000);
+    const formattedMinutes = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+    const formattedSeconds = String(remainingSeconds % 60).padStart(2, '0');
     const isTimeUp = timeLeft <= 0;
 
     return (
-        <div>
-            <div>
-                <h1>{"name : " + raceState.name + " | target : " + raceState.targetScore}</h1>
-                <p>{"nickname : " + player.nickname }</p>
-                <p>{"current Score : " + player.currentScore }</p>
+        <div className="race-active-container">
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', opacity: 0.8, fontSize: '0.9rem' }}>
+                <span>{raceState.name} | target: {raceState.targetScore}</span>
+                <span>{player.nickname} | score: {player.currentScore}</span>
             </div>
 
-            <div className={`timer-container ${isTimeUp ? 'blink-red' : ''}`}>
-                <h2 style={{ color: isTimeUp ? 'red' : 'inherit' }}>
-                    זמן: {remainingSeconds} / {totalSeconds}
-                </h2>
+            <div className={`race-timer-pill ${isTimeUp ? 'blink-red' : ''}`}>
+                {formattedMinutes}:{formattedSeconds}
             </div>
 
-            <div>
-                <h1>{"question : " + question.expression}</h1>
-            </div>
+            <Card className="race-question-card">
+                {question.expression}
+            </Card>
 
-            <div>
+            <div className="race-options-grid">
                 {
                     question.options.map((option, index) => (
                         <Button
                             key={index}
+                            className="race-option-btn"
                             onClick={() => {
                                 setIsSubmitting(true);
                                 onAnswerQuestion(option);
@@ -75,7 +75,6 @@ function RaceActivePlayer({ raceState, accountId , onAnswerQuestion}) {
                     ))
                 }
             </div>
-
         </div>
     );
 }

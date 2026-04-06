@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import RacePlayerPage from "./RacePlayerPage.jsx";
 import RaceHostPage from "./RaceHostPage.jsx";
 import { getRaceInfo } from "../../services/raceService.js";
+import {ClipLoader} from "react-spinners";
 
 function RacePage() {
     const location = useLocation();
@@ -53,19 +54,25 @@ function RacePage() {
                 checkInfo();
             });
         }
-        console.log("פה1")
-    }, [isConnected, userRole,checkInfo]);
+    }, [isConnected, userRole, checkInfo]);
+
+    const renderLoading = (message) => (
+        <div>
+            <ClipLoader/>
+            <p>{message}</p>
+        </div>
+    );
 
     if (error) {
-        return <div>מתנתק...</div>;
+        return renderLoading("Disconnecting...")
     }
 
     if (!isConnected) {
-        return <div>מתחבר...</div>;
+        return renderLoading("Connecting...")
     }
 
     if (userRole === 'Waiting') {
-        return <div>טוען נתונים...</div>;
+        return renderLoading("Loading data...")
     }
 
     return (

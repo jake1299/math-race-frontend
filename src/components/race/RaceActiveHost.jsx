@@ -1,44 +1,39 @@
 import React, { memo } from 'react';
+import './Race.css';
 
-// 1. קומפוננטת בן שעטופה ב-memo
-// היא תרונדר מחדש *רק* אם ה-props שלה (השחקן הספציפי או יעד הניקוד) השתנו
 const PlayerRow = memo(({ player, targetScore }) => {
 
-    // חישוב אחוזי ההתקדמות של השחקן
     const progress = Math.min((player.currentScore / targetScore) * 100, 100);
 
     return (
-        <div style={{ border: '1px solid gray', padding: '10px', borderRadius: '5px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <strong>{player.nickname}</strong>
-                <span>{player.currentScore} נקודות</span>
+        <div className="race-host-row">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '1.2rem' }}>{player.nickname}</strong>
+                <span>{player.currentScore} points</span>
             </div>
 
-            <div style={{ width: '100%', backgroundColor: '#eee', height: '10px', marginTop: '5px' }}>
-                <div style={{
-                    width: `${progress}%`,
-                    backgroundColor: 'green',
-                    height: '100%',
-                    transition: 'width 0.3s ease-in-out' // בונוס: אנימציה חלקה כשמד ההתקדמות עולה
-                }}></div>
+            <div className="race-progress-bar-container">
+                <div
+                    className="race-progress-filler"
+                    style={{ width: `${progress}%` }}
+                ></div>
             </div>
         </div>
     );
 });
 
-// 2. קומפוננטת האב
 function RaceActiveHost({ raceState }) {
     return (
-        <div>
-            <header>
-                <h1>{raceState.name} - המרוץ החל!</h1>
-                <h3>יעד ניקוד לניצחון: {raceState.targetScore}</h3>
+        <div className="race-active-container">
+            <header className="race-lobby-header">
+                <h1 style={{ margin: '0 0 10px 0' }}>{raceState.name} - The Race is On!</h1>
+                <h3 style={{ opacity: 0.8 }}>Target Score to Win: {raceState.targetScore}</h3>
             </header>
 
-            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ width: '100%', maxWidth: '800px', marginTop: '20px' }}>
                 {raceState.players.map(player => (
                     <PlayerRow
-                        key={player.id} // ה-KEY הקריטי שציינת
+                        key={player.id}
                         player={player}
                         targetScore={raceState.targetScore}
                     />
