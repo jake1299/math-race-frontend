@@ -10,7 +10,7 @@ import logo from "../../assets/logo.png";
 
 function LoginPage() {
     const navigate = useNavigate();
-    const {updateToken} = useContext(WebSocketContext);
+    const {updateAuthToken} = useContext(WebSocketContext);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -33,7 +33,7 @@ function LoginPage() {
                 console.log(response);
                 console.log("Logged in successfully!");
                 console.log(response.data);
-                updateToken(response.data.token, response.data.dayToSaveToken);
+                updateAuthToken(response.data.token, response.data.dayToSaveToken);
                 navigate("/");
             } else {
                 console.log("Login failed : " + response.message);
