@@ -22,44 +22,78 @@ function TrackGroup({ trackType, players, targetScore, highlightedPlayerId, onSe
 
         const OVERLAP_THRESHOLD_PERCENT = 4.5;
         const overlapScoreBuffer = (targetScore * OVERLAP_THRESHOLD_PERCENT) / 100;
+
         const sortedPlayers = [...players].sort((a, b) => b.currentScore - a.currentScore);
+
         const laneOccupancy = {};
-        let maxRoadUsed = 0;
-        const newAssignments = { ...previousAssignments.current };
+        const tempAssignments = {};
 
-        const newPositionedPlayers = sortedPlayers.map(player => {
-            let assignedRoad = 0;
-            let assignedLane = 0;
-            let foundLane = false;
-            const prev = newAssignments[player.id];
+        sortedPlayers.forEach(player => {
+            const prev = previousAssignments.current[player.id];
+            let assignedRoad = -1;
+            let assignedLane = -1;
 
-            // לוגיקת שיבוץ נתיבים כדי למנוע חפיפה של רכבים
-            for (let r = 0; r < 5; r++) {
-                const key0 = `${r}-0`, key1 = `${r}-1`;
-                const isLane0Free = laneOccupancy[key0] === undefined || (laneOccupancy[key0] - player.currentScore) >= overlapScoreBuffer;
-                const isLane1Free = laneOccupancy[key1] === undefined || (laneOccupancy[key1] - player.currentScore) >= overlapScoreBuffer;
+            if (prev && prev.roadIndex !== undefined && prev.laneIndex !== undefined) {
+                const key = `${prev.roadIndex}-${prev.laneIndex}`;
+                const occupantScore = laneOccupancy[key];
 
-                if (isLane0Free || isLane1Free) {
-                    assignedRoad = r;
-                    foundLane = true;
-
-                    if (prev && prev.laneIndex === 0 && isLane0Free) assignedLane = 0;
-                    else if (prev && prev.laneIndex === 1 && isLane1Free) assignedLane = 1;
-                    else assignedLane = isLane0Free ? 0 : 1;
-
-                    laneOccupancy[`${assignedRoad}-${assignedLane}`] = player.currentScore;
-                    maxRoadUsed = Math.max(maxRoadUsed, assignedRoad);
-                    break;
+                // אם פנוי או שיש מרחק ביטחון מהרכב ששובץ לפניו
+                if (occupantScore === undefined || (occupantScore - player.currentScore) >= overlapScoreBuffer) {
+                    assignedRoad = prev.roadIndex;
+                    assignedLane = prev.laneIndex;
                 }
             }
 
-            if (!foundLane) { assignedRoad = 4; assignedLane = 1; }
-            newAssignments[player.id] = { roadIndex: assignedRoad, laneIndex: assignedLane };
-            return { ...player, roadIndex: assignedRoad, laneIndex: assignedLane };
+            if (assignedRoad === -1) {
+                for (let r = 0; r < 5; r++) {
+                    const key0 = `${r}-0`;
+                    const key1 = `${r}-1`;
+                    const isLane0Free = laneOccupancy[key0] === undefined || (laneOccupancy[key0] - player.currentScore) >= overlapScoreBuffer;
+                    const isLane1Free = laneOccupancy[key1] === undefined || (laneOccupancy[key1] - player.currentScore) >= overlapScoreBuffer;
+
+                    if (isLane0Free || isLane1Free) {
+                        assignedRoad = r;
+
+                        if (prev && prev.laneIndex === 0 && isLane0Free) assignedLane = 0;
+                        else if (prev && prev.laneIndex === 1 && isLane1Free) assignedLane = 1;
+                        else assignedLane = isLane0Free ? 0 : 1;
+                        break;
+                    }
+                }
+            }
+
+            if (assignedRoad === -1) { assignedRoad = 4; assignedLane = 1; }
+
+            laneOccupancy[`${assignedRoad}-${assignedLane}`] = player.currentScore;
+            tempAssignments[player.id] = { roadIndex: assignedRoad, laneIndex: assignedLane };
+        });
+
+        const usedRoads = new Set();
+        Object.values(tempAssignments).forEach(assignment => usedRoads.add(assignment.roadIndex));
+
+        const sortedUsedRoads = Array.from(usedRoads).sort((a, b) => a - b);
+        const roadMapping = {};
+        sortedUsedRoads.forEach((oldRoadIndex, newRoadIndex) => {
+            roadMapping[oldRoadIndex] = newRoadIndex;
+        });
+
+        let finalMaxRoadUsed = 0;
+        const newAssignments = {};
+
+
+        const newPositionedPlayers = sortedPlayers.map(player => {
+            const temp = tempAssignments[player.id];
+            const compactedRoad = roadMapping[temp.roadIndex];
+
+            finalMaxRoadUsed = Math.max(finalMaxRoadUsed, compactedRoad);
+            newAssignments[player.id] = { roadIndex: compactedRoad, laneIndex: temp.laneIndex };
+
+            return { ...player, roadIndex: compactedRoad, laneIndex: temp.laneIndex };
         });
 
         previousAssignments.current = newAssignments;
-        setRenderData({ positionedPlayers: newPositionedPlayers, numRoads: Math.max(1, maxRoadUsed + 1) });
+        setRenderData({ positionedPlayers: newPositionedPlayers, numRoads: Math.max(1, finalMaxRoadUsed + 1) });
+
     }, [players, targetScore, isEmpty]);
 
     return (
