@@ -117,9 +117,13 @@ function WebSocketProvider({ children }) {
                 if (event.reason && event.reason.startsWith("DUPLICATE_RACE_CONNECTION")) {
                     console.log(event.reason + " -3-");
                     setError(event.reason);
+                }else if (event.code === 1006) {
+                    console.log("Network dropped or server unreachable.");
+                    setError("Session closed.");
                 }
 
                 console.log("WS WebSocket Closed!");
+                console.log(event.reason);
 
                 setIsConnected(false);
             },

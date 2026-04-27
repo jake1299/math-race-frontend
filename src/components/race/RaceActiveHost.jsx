@@ -9,8 +9,8 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
     const [livePlayers, setLivePlayers] = useState(raceState.players);
     const [localTimeLeft, setLocalTimeLeft] = useState(raceState.remainingTimeMs);
     const endTimeRef = useRef(0);
+    const lastSyncTimeRef = useRef(raceState.receivedAt || 0);
 
-    // 1. קביעת יעד הסיום האבסולוטי המדויק מבוסס על זמן קבלת ההודעה
     useEffect(() => {
         if (raceState.status === 'IN_PROGRESS') {
             const receivedTime = raceState.receivedAt || Date.now();
@@ -20,7 +20,6 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
         }
     }, [raceState.remainingTimeMs, raceState.status, raceState.receivedAt]);
 
-    // 2. הטיימר המרכזי - משולב עם תיקון היציאה מהטאב ואופטימיזציית רינדור
     useEffect(() => {
         if (raceState.status !== 'IN_PROGRESS') return;
 
@@ -30,7 +29,6 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
             const now = Date.now();
             const remaining = Math.max(0, endTimeRef.current - now);
 
-            // עדכון סטייט רק כשמתחלפת שנייה שלמה (מונע רינדור של עשרות פעמים בשנייה)
             setLocalTimeLeft(prevTime => {
                 if (Math.floor(prevTime / 1000) !== Math.floor(remaining / 1000) || remaining <= 0) {
                     return remaining;
@@ -43,10 +41,9 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
             }
         };
 
-        updateTimer(); // קריאה ראשונית לאפס תצוגה מיד
+        updateTimer();
         intervalId = setInterval(updateTimer, 100);
 
-        // פתרון למעבר בין טאבים: דוגמים מיד את הזמן שוב!
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
                 updateTimer();
@@ -61,27 +58,37 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
     }, [raceState.status]);
 
     useEffect(() => {
+        const isFullSync = raceState.receivedAt !== lastSyncTimeRef.current;
+        if (isFullSync) {
+            lastSyncTimeRef.current = raceState.receivedAt;
+        }
+
         setLivePlayers(prevLive => {
             return raceState.players.map(parentPlayer => {
                 const existing = prevLive.find(p => p.id === parentPlayer.id);
 
-                // אם השחקן כבר קיים, אנחנו מעדכנים אותו בנתונים החדשים מהאבא (כמו השאלה מהסנכרון)
-                // אבל שומרים על ה-bubbleEvent המקומי של הבן שלא קיים באבא
                 if (existing) {
-                    return {
-                        ...existing,
-                        ...parentPlayer,
-                        // שומרים על אירועים ויזואליים מקומיים של הבן
-                        bubbleEvent: existing.bubbleEvent,
-                        clearInputTrigger: existing.clearInputTrigger
-                    };
+                    if (isFullSync) {
+                        return {
+                            ...existing,
+                            ...parentPlayer,
+                            bubbleEvent: existing.bubbleEvent,
+                            clearInputTrigger: existing.clearInputTrigger
+                        };
+                    } else {
+                        return {
+                            ...existing,
+                            online: parentPlayer.online,
+                            nickname: parentPlayer.nickname,
+                            currentScore: Math.max(existing.currentScore || 0, parentPlayer.currentScore || 0)
+                        };
+                    }
                 }
                 return parentPlayer;
             });
         });
-    }, [raceState.players]);
+    }, [raceState.players, raceState.receivedAt]);
 
-    // קבלת אירועים בזמן אמת מה-WebSocket
     useEffect(() => {
         if (!isConnected) return;
         const queue = `/user/queue/race/host`;
@@ -123,7 +130,7 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
                                 timeLimitMillis: data.data.timeLimitMillis,
                                 questionRemainingTimeMillis: data.data.questionRemainingTimeMillis,
                                 score: data.data.score,
-                                receivedAt: Date.now() // הזמן בו השאלה התקבלה - לטובת סנכרון הטיימר
+                                receivedAt: Date.now()
                             };
                             updatedPlayer.currentJunction = null;
                             updatedPlayer.bubbleEvent = { type: 'QUESTION', id: bubbleId };
@@ -136,7 +143,7 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
                                 offer2: data.data.offer2,
                                 timeLimitMillis: data.data.timeLimitMillis,
                                 questionRemainingTimeMillis: data.data.questionRemainingTimeMillis,
-                                receivedAt: Date.now() // הזמן בו הצומת התקבל - לטובת סנכרון הטיימר
+                                receivedAt: Date.now()
                             };
                             updatedPlayer.currentQuestion = null;
                             updatedPlayer.bubbleEvent = { type: 'JUNCTION', id: bubbleId };
