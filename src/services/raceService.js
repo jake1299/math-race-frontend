@@ -1,4 +1,4 @@
-import {apiWithToken} from "../api/axios";
+import {apiWithOutToken,apiWithToken} from "../api/axios";
 
 const createRace = async (raceData) => {
     const response = await apiWithToken.post('/race/create', raceData);
@@ -12,14 +12,18 @@ const joinRace = async (joinData) => {
     return response.data;
 };
 
-const getRaceInfo = async (roomCode) => {
-    const response =
-        await apiWithToken.get(`/race/${roomCode}/info`);
+const publicRacesList = async (loc) => {
+    const response = await apiWithOutToken.get(`/race/public-list`,{
+        params: {
+            page: loc.page,
+            size: loc.size,
+        }
+    });
     return response.data;
 };
 
 export {
     createRace,
-    getRaceInfo,
-    joinRace
+    joinRace,
+    publicRacesList,
 };

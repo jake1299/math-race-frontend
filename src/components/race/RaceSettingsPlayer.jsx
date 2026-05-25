@@ -1,8 +1,8 @@
 import React, {useState, useRef, useEffect, memo} from 'react';
 import { FaGear, FaRightFromBracket, FaCheck } from "react-icons/fa6";
-import './RaceSettings.css';
+import './RaceSettingsPlayer.css';
 
-const RaceSettings = ({ currentNickname, onChangeNickname, onLeaveRace }) => {
+const RaceSettingsPlayer = ({ currentNickname, onChangeNickname, onLeaveRace }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [nicknameInput, setNicknameInput] = useState("");
     const wrapperRef = useRef(null);
@@ -26,19 +26,17 @@ const RaceSettings = ({ currentNickname, onChangeNickname, onLeaveRace }) => {
 
     const handleUpdate = () => {
         if (nicknameInput.trim() && nicknameInput !== currentNickname) {
-            onChangeNickname(nicknameInput.trim());
+            onChangeNickname(nicknameInput);
         }
         setIsOpen(false);
     };
 
     return (
         <div className="race-settings-wrapper" ref={wrapperRef}>
-            {/* לשונית חצי-עיגול (הגדרות) */}
             <button className={`settings-tab-btn ${isOpen ? 'active' : ''}`} onClick={handleOpenToggle} title="Settings">
                 <FaGear className="gear-icon" />
             </button>
 
-            {/* פאנל ההגדרות שנפתח */}
             {isOpen && (
                 <div className="settings-dropdown-panel game-card">
                     <h3 className="settings-title">Settings</h3>
@@ -52,7 +50,8 @@ const RaceSettings = ({ currentNickname, onChangeNickname, onLeaveRace }) => {
                                 value={nicknameInput}
                                 onChange={(e) => setNicknameInput(e.target.value)}
                                 placeholder="New nickname..."
-                                maxLength={15}
+                                maxLength={20}
+                                minLength={3}
                             />
                             <button className="nickname-update-btn" onClick={handleUpdate} title="Update">
                                 <FaCheck />
@@ -75,4 +74,4 @@ const RaceSettings = ({ currentNickname, onChangeNickname, onLeaveRace }) => {
 };
 
 
-export default memo(RaceSettings);
+export default memo(RaceSettingsPlayer);

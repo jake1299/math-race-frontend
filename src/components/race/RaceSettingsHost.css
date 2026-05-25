@@ -1,0 +1,210 @@
+/* =========================================
+   מעטפת כפתור ההגדרות
+========================================= */
+.race-settings-wrapper {
+    position: relative;
+    display: inline-block;
+    pointer-events: auto; /* מאפשר לחיצה בתוך אזור הלשוניות */
+}
+
+/* כפתור החצי-עיגול (גלגל שיניים) */
+.settings-tab-btn {
+    all: unset;
+    box-sizing: border-box;
+    width: 45px;
+    height: 30px;
+    border-radius: 0 0 20px 20px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-top: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 4px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 1.1rem;
+    transition: color 0.2s ease, background-color 0.2s;
+}
+
+.settings-tab-btn:hover,
+.settings-tab-btn.active {
+    color: var(--blue);
+    background-color: rgba(59, 130, 246, 0.05); /* רקע כחלחל עדין */
+}
+
+.gear-icon {
+    transition: transform 0.3s ease;
+}
+
+.settings-tab-btn:hover .gear-icon,
+.settings-tab-btn.active .gear-icon {
+    transform: rotate(90deg); /* אנימציית סיבוב נחמדה בלחיצה/מעבר */
+}
+
+/* =========================================
+   פאנל ההגדרות (התפריט הנפתח)
+========================================= */
+.settings-dropdown-panel {
+    position: absolute;
+    top: 100%;
+    left: 0; /* נפתח שמאלה כי זה בצד שמאל של המסך */
+    margin-top: 12px;
+    width: 290px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    direction: rtl; /* שומר על יישור לימין לטקסט */
+    animation: slideDownFade 0.2s ease-out forwards;
+}
+
+@keyframes slideDownFade {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.settings-title {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: var(--text-h);
+    font-weight: 900;
+    text-align: center;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 10px;
+}
+
+/* =========================================
+   אזורי קלט (Input Groups)
+========================================= */
+.settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.settings-label {
+    font-size: 0.85rem;
+    color: var(--text);
+    font-weight: bold;
+}
+
+.nickname-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nickname-input {
+    flex: 1;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    color: var(--text-h);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+
+.nickname-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.nickname-update-btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: filter 0.2s, transform 0.1s;
+}
+
+.nickname-update-btn:hover {
+    filter: brightness(1.1);
+}
+
+.nickname-update-btn:active {
+    transform: scale(0.9);
+}
+
+/* =========================================
+   מפריד
+========================================= */
+.settings-divider {
+    height: 1px;
+    background-color: var(--border);
+    margin: 4px 0;
+    border-radius: 1px;
+}
+
+/* =========================================
+   כפתורי שליטה (עצירה וביטול מירוץ)
+========================================= */
+.host-actions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.settings-action-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1rem;
+    transition: filter 0.2s, transform 0.1s;
+}
+
+.settings-action-btn:hover {
+    filter: brightness(1.15);
+}
+
+.settings-action-btn:active {
+    transform: scale(0.97);
+}
+
+.settings-action-btn.orange-btn {
+    background-color: #f97316;
+    box-shadow: 0 3px 0 #c2410c;
+}
+
+.settings-action-btn.red-btn {
+    background-color: #ef4444;
+    box-shadow: 0 3px 0 #b91c1c;
+}
+
+.action-icon {
+    font-size: 1.15rem;
+}
+
+/* =========================================
+   התאמות למובייל
+========================================= */
+@media (max-width: 500px) {
+    .settings-dropdown-panel {
+        width: 250px;
+        left: -10px; /* תזוזה קלה פנימה כדי שלא יחרוג מהמסך במובייל */
+    }
+}

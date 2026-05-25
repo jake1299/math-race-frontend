@@ -15,7 +15,7 @@
 .alert-modal::backdrop {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(4px);
-    animation: fadeIn 0.3s ease;
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .alert-close-btn {

@@ -147,7 +147,20 @@ code {
   box-shadow: 0 8px 0 var(--border);
 }
 
+.game-card img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
 
+.dashboard-logo {
+  display: block;
+  width: 80%;
+  max-width: 500px;
+  height: auto;
+  margin: 0 auto;
+}
 
 .game-card h2 {
   font-weight: 900;

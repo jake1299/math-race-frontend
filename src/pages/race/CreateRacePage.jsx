@@ -14,6 +14,7 @@ import {useWebSocket} from "../../services/webSocket/WebSocketContext.js";
 
 const INITIAL_STATE = {
     name: "",
+    nickname: "",
     targetScore: "",
     isPrivate: true
 };
@@ -57,8 +58,13 @@ function CreateRacePage() {
         clearError();
         clearLastMessage();
 
+        const payload = Object.fromEntries(
+            Object.entries(formData).filter(([key, value]) => value !== "")
+        );
+
         try {
-            const response = await createRace(formData);
+            const response = await createRace(payload);
+
             if (response.success) {
                 const { code } = response.data;
                 navigate(`/race/${code}/host`);
@@ -148,6 +154,14 @@ function CreateRacePage() {
                         value={formData.targetScore}
                         onChange={handleChange}
                         required
+                    />
+
+                    <Input
+                        name={"nickname"}
+                        type={"text"}
+                        placeholder={"nickname for race"}
+                        value={formData.nickname}
+                        onChange={handleChange}
                     />
 
                     <div className="checkbox-container">

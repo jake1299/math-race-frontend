@@ -1,7 +1,9 @@
 import React, {useCallback, useState} from 'react';
 import './RaceHeaderPlayer.css';
-import RaceSettings from './RaceSettings';
 import ConfirmModal from '../ui/ConfirmModal';
+import RaceMessages from "./RaceMessages.jsx";
+import { FaRegCopy, FaCheck } from "react-icons/fa6";
+import RaceSettingsPlayer from "./RaceSettingsPlayer.jsx";
 
 const formatTime = (ms) => {
     if (typeof ms !== 'number' || isNaN(ms) || ms <= 0) {
@@ -13,7 +15,7 @@ const formatTime = (ms) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const RaceHeaderPlayer = ({ raceState, localPlayer, localTimeLeft, onChangeNickname, onLeaveRace }) => {
+const RaceHeaderPlayer = ({ raceState, localPlayer, localTimeLeft, onChangeNickname, onLeaveRace, messages }) => {
     const [isCopied, setIsCopied] = useState(false);
     const [isOpen, setIsOpen] = useState(true);
 
@@ -25,6 +27,7 @@ const RaceHeaderPlayer = ({ raceState, localPlayer, localTimeLeft, onChangeNickn
     const isDanger = validTimeLeft <= 10000 && validTimeLeft > 0;
 
     const totalPlayers = (raceState.players?.length || 0) + 1;
+    const isPaused = raceState?.status === 'PAUSED';
 
     const handleCopyCode = () => {
         if (raceState.roomCode) {
@@ -56,22 +59,26 @@ const RaceHeaderPlayer = ({ raceState, localPlayer, localTimeLeft, onChangeNickn
                         {/* צד ימין */}
                         <div className="header-info-group">
                             <div className="room-details">
-                                <h2>{raceState.name}</h2>
-                                <div className="room-code-wrapper">
-                                    <span className="room-code-label">קוד:</span>
+                                <div className="room-name-and-code">
+                                    <h2>{raceState.name}</h2>
                                     <div className="room-code-box">
                                         <span className="code-text">{raceState.roomCode || '---'}</span>
                                         <button className="copy-btn" onClick={handleCopyCode} title="העתק קוד">
-                                            {isCopied ? '✅' : '📋'}
+                                            {isCopied ? <FaCheck style={{ color: 'var(--green)' }} /> : <FaRegCopy style={{ color: 'var(--text-h)' }} />}
                                         </button>
                                     </div>
+                                </div>
+
+                                <div className={`race-status-badge ${isPaused ? 'paused' : 'active'}`}>
+                                    <span className="status-text">Status: {isPaused ? 'Paused' : 'Active'}</span>
+                                    <span className="status-circle"></span>
                                 </div>
                             </div>
                             <div className="vertical-separator"></div>
                             <div className="host-details">
                                 <div className="host-nickname-wrapper">
-                                    <span className={`status-dot ${raceState.host?.online ? 'online' : 'offline'}`} title={raceState.host?.online ? 'מחובר' : 'מנותק'}></span>
                                     <span className="host-nickname-large">{raceState.host?.nickname || 'מנהל'}</span>
+                                    <span className={`status-dot ${raceState.host?.online ? 'online' : 'offline'}`} title={raceState.host?.online ? 'מחובר' : 'מנותק'}></span>
                                 </div>
                                 {raceState.host?.userName ? (
                                     <span className="host-username blue-text">@{raceState.host.userName}</span>
@@ -111,8 +118,8 @@ const RaceHeaderPlayer = ({ raceState, localPlayer, localTimeLeft, onChangeNickn
                             <div className="vertical-separator"></div>
                             <div className="host-details">
                                 <div className="host-nickname-wrapper">
-                                    <span className={`status-dot ${localPlayer?.online ? 'online' : 'offline'}`} title={localPlayer?.online ? 'מחובר' : 'מנותק'}></span>
                                     <span className="host-nickname-large">{localPlayer?.nickname || 'שחקן'}</span>
+                                    <span className={`status-dot ${localPlayer?.online ? 'online' : 'offline'}`} title={localPlayer?.online ? 'מחובר' : 'מנותק'}></span>
                                 </div>
                                 {localPlayer?.userName ? (
                                     <span className="host-username blue-text">@{localPlayer.userName}</span>
@@ -124,25 +131,35 @@ const RaceHeaderPlayer = ({ raceState, localPlayer, localTimeLeft, onChangeNickn
                     </div>
                 </div>
 
-                {/* כפתור פתיחה/סגירה מרכזי */}
-                <button
-                    className="header-toggle-btn"
-                    onClick={() => setIsOpen(!isOpen)}
-                    title={isOpen ? "הסתר כותרת" : "הצג כותרת"}
-                >
-                    {isOpen ? '▲' : '▼'}
-                </button>
+                {/* אזור הלשוניות (כפתורי חצי עיגול) */}
+                <div className="header-bottom-tabs-container">
 
-                {/* כפתור ההגדרות בצד שמאל */}
-                <RaceSettings
-                    currentNickname={localPlayer?.nickname}
-                    onChangeNickname={onChangeNickname}
-                    onLeaveRace={handleLeaveClick} /* כאן החלפנו את הפונקציה כדי שקודם ייפתח מודאל */
-                />
+                    {/* צד שמאל - ההגדרות וההודעות */}
+                    <div className="tabs-side tabs-left">
+                        <RaceSettingsPlayer
+                            currentNickname={localPlayer?.nickname}
+                            onChangeNickname={onChangeNickname}
+                            onLeaveRace={handleLeaveClick}
+                        />
+                        <RaceMessages messages={messages} />
+                    </div>
+
+                    {/* אמצע - כפתור פתיחה/סגירה מרכזי */}
+                    <button
+                        className="header-toggle-btn"
+                        onClick={() => setIsOpen(!isOpen)}
+                        title={isOpen ? "הסתר כותרת" : "הצג כותרת"}
+                    >
+                        {isOpen ? '▲' : '▼'}
+                    </button>
+
+                    {/* צד ימין - תופס מקום ריק לאיזון האמצע */}
+                    <div className="tabs-side tabs-right"></div>
+
+                </div>
 
             </div>
 
-            {/* שילוב קומפוננטת המודאל שלנו */}
             <ConfirmModal
                 isOpen={isLeaveModalOpen}
                 title="עזיבת המירוץ"

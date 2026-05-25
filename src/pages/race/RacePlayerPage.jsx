@@ -20,7 +20,6 @@ function RacePlayerPage() {
 
     const [raceState, setRaceState] = useState(null);
     const [timeOffset, setTimeOffset] = useState(0);
-
     const [modalConfig, setModalConfig] = useState(null);
     const [isReconnecting, setIsReconnecting] = useState(false);
     const [topAlert, setTopAlert] = useState(null);
@@ -83,7 +82,7 @@ function RacePlayerPage() {
                             players: [...prevState.players, formatOtherPlayer(data.data.player)]
                         };
                     });
-                } else if (data.type === 'PLAYER_CONNECTION' || data.type === 'HOST_CONNECTION') {
+                } else if (data.type === 'PLAYER_CONNECTION' || data.type === 'HOST_CONNECTION' || data.type === 'CHANGE_NICKNAME') {
                     setRaceState(prevState => {
                         if (!prevState) return null;
 
@@ -141,7 +140,7 @@ function RacePlayerPage() {
 
                     if (data.type === 'RACE_RESUMED') {
                         console.log("מבקש סנכרון נתונים פרטי מהשרת...");
-                        sendMessage(`/app/race/${roomCode}/host/sync`, {});
+                        sendMessage(`/app/race/${roomCode}/player/sync`, {});
                     }
 
                     if (data.type === 'RACE_CANCELLED') {
@@ -151,7 +150,7 @@ function RacePlayerPage() {
 
                         setModalConfig({
                             title: "Race Cancelled",
-                            message: "המירוץ בוטל על ידי המנהל. תועבר לדף הבית בעוד 5 שניות...",
+                            message: "The race has been canceled by the administrator. You will be redirected to the home page in 5 seconds...",
                             autoAction: {
                                 delayMs: 5000,
                                 action: () => {
@@ -196,6 +195,14 @@ function RacePlayerPage() {
                             } : null
                         };
                     });
+                } else if (data.type === 'CHANGE_RACE_NAME') {
+                setRaceState(prevState => {
+                    if (!prevState) return null;
+                    return {
+                        ...prevState,
+                        name:data.data.raceName,
+                    }
+                })
                 }
             }, activeJoinToken
         );
@@ -210,7 +217,7 @@ function RacePlayerPage() {
                 setTopAlert(prev => {
                     if (prev && prev.type === 'error') {
                         setTimeout(() => setTopAlert(null), 1500);
-                        return { type: 'success', message: "החיבור חודש בהצלחה!", isLoading: false };
+                        return { type: 'success', message: "The connection was successfully renewed!", isLoading: false };
                     }
                     return null;
                 });
@@ -241,6 +248,8 @@ function RacePlayerPage() {
                             timeLimitMillis: myPlayer.currentQuestion.timeLimitMillis,
                             questionRemainingTimeMillis: myPlayer.currentQuestion.questionRemainingTimeMillis,
                             score: myPlayer.currentQuestion.score,
+                            canAskHint : myPlayer.currentQuestion.canAskHint,
+                            hint: myPlayer.currentQuestion.hint,
                             receivedAt: myPlayer.currentQuestion.sentAt,
                         } : null,
 
@@ -311,7 +320,7 @@ function RacePlayerPage() {
             }else if (error === "Session closed."){
                 setTopAlert({
                     type: 'error',
-                    message: "החיבור אבד. מנסה להתחבר שוב...",
+                    message: "Connection lost. Trying to reconnect...",
                     isLoading: true
                 });
             } else {
@@ -380,12 +389,18 @@ function RacePlayerPage() {
         });
     };
 
+    const handleAskForHint = () => {
+        sendMessage(`/app/race/${roomCode}/player/hint`, {});
+    };
+
     const handleLeaveRace = () => {
         sendMessage(`/app/race/${roomCode}/player/left`, {});
     };
 
-    const handleNicknameChange = () => {
-        sendMessage(`/app/race/${roomCode}/player/change-nickname`, {});
+    const handleNicknameChange = (nickname) => {
+        sendMessage(`/app/race/${roomCode}/player/change-nickname`, {
+            nickname : nickname
+        });
     };
 
     const renderRaceContent = () => {
@@ -405,7 +420,8 @@ function RacePlayerPage() {
             case 'IN_PROGRESS':
                 return <RaceActivePlayer raceState={raceState} joinToken={activeJoinToken} timeOffset={timeOffset}
                                          onAnswerQuestion={handleAnswerQuestion} onChooseJunction={handleChooseJunction}
-                                         onNicknameChange ={handleNicknameChange} onLeaveRace = {handleLeaveRace}/>;
+                                         onNicknameChange ={handleNicknameChange} onLeaveRace = {handleLeaveRace}
+                                         onHintClick = {handleAskForHint}/>;
             case 'FINISHED':
                 return <RaceResults raceState={raceState} currentPlayerId={raceState.myAccount.id} />;
             default:

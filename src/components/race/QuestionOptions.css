@@ -1,0 +1,57 @@
+.options-wrapper {
+    height: 30vh;
+    min-height: 160px;
+    flex-shrink: 0;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+    height: 100%;
+}
+
+.option-btn {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    border: none;
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    cursor: pointer;
+    transition: all 0.1s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--sans);
+}
+
+.option-btn:hover:not(:disabled) {
+    transform: translateY(-4px);
+}
+
+.option-btn:active:not(:disabled) {
+    transform: translateY(6px);
+    box-shadow: 0 0px 0 transparent !important;
+}
+
+.option-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bg-blue   { background-color: var(--blue);   box-shadow: 0 6px 0 #1d4ed8; }
+.bg-green  { background-color: var(--green);  box-shadow: 0 6px 0 #15803d; }
+.bg-red    { background-color: var(--red);    box-shadow: 0 6px 0 #b91c1c; }
+.bg-yellow { background-color: var(--yellow); box-shadow: 0 6px 0 #d97706; }
+
+.option-btn:hover.bg-blue:not(:disabled)   { box-shadow: 0 10px 0 #1d4ed8; }
+.option-btn:hover.bg-green:not(:disabled)  { box-shadow: 0 10px 0 #15803d; }
+.option-btn:hover.bg-red:not(:disabled)    { box-shadow: 0 10px 0 #b91c1c; }
+.option-btn:hover.bg-yellow:not(:disabled) { box-shadow: 0 10px 0 #d97706; }
+
+.btn-desc { font-size: 0.9rem; font-weight: 600; margin-top: 4px; opacity: 0.9; }

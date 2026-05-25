@@ -1,0 +1,73 @@
+/* QuestionHint.css */
+
+.hint-card-container {
+    width: 100%;
+    background-color: var(--bg);
+    border: 3px solid var(--yellow);
+    border-radius: 16px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 5px; /* מרווח קטן מהקלף שמעליו */
+    box-shadow: 0 4px 0 var(--yellow);
+    animation: slideUpFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    direction: rtl; /* יישור לימין */
+}
+
+/* כשאנחנו בתוך מסך צר, הופכים לטור */
+@media (max-width: 480px) {
+    .hint-card-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 15px;
+    }
+}
+
+.hint-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(245, 158, 11, 0.15);
+    color: var(--yellow);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.hint-card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hint-card-label {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--yellow);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hint-card-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-h);
+    line-height: 1.4;
+}
+
+/* אנימציית קפיצה קטנה בעת הופעת הרמז */
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

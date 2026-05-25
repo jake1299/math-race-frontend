@@ -1,0 +1,299 @@
+/* =========================================
+   1. מעטפת ההגדרות
+========================================= */
+.race-settings-wrapper {
+    position: relative;
+    display: inline-block;
+    pointer-events: auto;
+    z-index: 100;
+}
+
+/* =========================================
+   2. הלשונית (גלגל שיניים) - עם הרקע של הגבול, בלי תזוזה!
+========================================= */
+/* =========================================
+   2. הלשונית (גלגל שיניים) - גודל מקורי, בלי לקפוץ!
+========================================= */
+/* =========================================
+   2. הלשונית (גלגל שיניים) - רק ביטול הקפיצה!
+========================================= */
+.settings-tab-btn {
+    appearance: none !important;
+    box-sizing: border-box !important;
+    width: 60px !important;
+    height: 32px !important;
+    border-radius: 0 0 30px 30px !important;
+    background-color: var(--bg) !important;
+
+    /* מסגרת רגילה, וללא קו עליון (בדיוק כמו שהיה אצלך במקור) */
+    border: 2px solid var(--border) !important;
+    border-top: none !important;
+    margin-top: 0 !important; /* ביטול הדחיפה המוגזמת למעלה */
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding-bottom: 4px !important;
+    cursor: pointer !important;
+    color: var(--text) !important;
+    font-size: 1.2rem !important;
+    position: relative !important;
+    z-index: 10 !important;
+
+    box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1) !important;
+
+    /* חוסם את הקפיצה למעלה/למטה מ-index.css */
+    transform: none !important;
+    transition: color 0.2s ease !important;
+}
+
+/* במעבר עכבר - שומר על הגבול, לא זז! */
+.settings-tab-btn:hover,
+.settings-tab-btn.active {
+    background-color: var(--bg) !important;
+
+    /* משנה רק את צבע האייקון */
+    color: var(--blue) !important;
+
+    /* מונע מהכפתור לקפוץ */
+    transform: none !important;
+
+    /* מוסיף את ה"רקע של הגבול" (הצללה קשיחה כמו ב-index.css) */
+    box-shadow: 0 4px 0 var(--border) !important;
+}
+
+/* סיבוב חלק של גלגל השיניים */
+.gear-icon {
+    transition: transform 0.3s ease !important;
+}
+
+.settings-tab-btn:hover .gear-icon,
+.settings-tab-btn.active .gear-icon {
+    transform: rotate(90deg) !important;
+}
+
+/* =========================================
+   3. פאנל ההגדרות (התפריט הנפתח)
+========================================= */
+.settings-dropdown-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    width: 260px;
+    background: var(--bg) !important;
+    border: 2px solid var(--border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+    padding: 16px !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+    direction: ltr !important;
+    animation: slideDownFade 0.2s ease-out forwards;
+}
+
+@keyframes slideDownFade {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.settings-title {
+    margin: 0 0 5px 0 !important;
+    font-size: 1.1rem !important;
+    color: var(--text-h) !important;
+    font-weight: 900 !important;
+    text-align: center !important;
+    border-bottom: 2px solid var(--border) !important;
+    padding-bottom: 10px !important;
+}
+
+/* =========================================
+   4. אזורי קלט
+========================================= */
+.settings-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+.settings-label {
+    font-size: 0.85rem !important;
+    color: var(--text) !important;
+    font-weight: bold !important;
+    text-align: left !important;
+}
+
+.nickname-input-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.nickname-input {
+    flex: 1 !important;
+    background: var(--code-bg) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-h) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 0.95rem !important;
+    outline: none !important;
+    font-family: inherit !important;
+}
+
+.nickname-input:focus {
+    border-color: var(--blue) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* =========================================
+   5. כפתור עדכון (עם V לבן וברור)
+========================================= */
+.nickname-update-btn {
+    all: unset !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: var(--blue) !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 0 #1d4ed8 !important;
+    transition: all 0.1s ease !important;
+}
+
+.nickname-update-btn:hover {
+    filter: brightness(1.1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 0 #1d4ed8 !important;
+}
+
+.nickname-update-btn:active {
+    transform: translateY(4px) !important;
+    box-shadow: 0 0 0 transparent !important;
+}
+
+.nickname-update-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+    color: white !important;
+    fill: white !important;
+    stroke: white !important;
+    display: block !important;
+}
+
+/* =========================================
+   6. מפריד וכפתור יציאה
+========================================= */
+.settings-divider {
+    height: 1px !important;
+    background-color: var(--border) !important;
+    margin: 4px 0 !important;
+    border-radius: 1px !important;
+}
+
+.settings-leave-btn {
+    all: unset !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    font-weight: 900 !important;
+    background-color: var(--red) !important;
+    color: white !important;
+    box-shadow: 0 3px 0 #b91c1c !important;
+    cursor: pointer !important;
+    font-size: 1rem !important;
+    margin-top: 5px !important;
+    transition: all 0.1s ease !important;
+}
+
+.settings-leave-btn:hover {
+    filter: brightness(1.15) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 0 #b91c1c !important;
+}
+
+.settings-leave-btn:active {
+    transform: translateY(3px) !important;
+    box-shadow: 0 0 0 transparent !important;
+}
+
+.settings-leave-btn svg {
+    color: white !important;
+    fill: white !important;
+    margin-right: 8px !important;
+}
+
+/* =========================================
+   7. התאמות למנהל (למקרה שאתה משתמש באותו קובץ)
+========================================= */
+.host-actions-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-top: 5px !important;
+}
+
+.settings-action-btn {
+    all: unset !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    font-weight: bold !important;
+    color: white !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    font-size: 1rem !important;
+    transition: filter 0.2s, transform 0.1s !important;
+}
+
+.settings-action-btn:hover {
+    filter: brightness(1.15) !important;
+    transform: translateY(-2px) !important;
+}
+
+.settings-action-btn:active {
+    transform: translateY(3px) !important;
+    box-shadow: 0 0 0 transparent !important;
+}
+
+.settings-action-btn.orange-btn {
+    background-color: #f97316 !important;
+    box-shadow: 0 3px 0 #c2410c !important;
+}
+.settings-action-btn.orange-btn:hover { box-shadow: 0 5px 0 #c2410c !important; }
+
+.settings-action-btn.red-btn {
+    background-color: #ef4444 !important;
+    box-shadow: 0 3px 0 #b91c1c !important;
+}
+.settings-action-btn.red-btn:hover { box-shadow: 0 5px 0 #b91c1c !important; }
+
+.action-icon {
+    font-size: 1.15rem !important;
+    fill: white !important;
+    color: white !important;
+}
+
+/* =========================================
+   8. התאמות למובייל
+========================================= */
+@media (max-width: 500px) {
+    .settings-dropdown-panel {
+        width: 250px !important;
+        left: -10px !important;
+    }
+}

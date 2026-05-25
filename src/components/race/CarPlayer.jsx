@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useState, useRef } from 'react';
+import { FaLightbulb } from "react-icons/fa6";
 import './CarPlayer.css';
 
 const getBubbleIcon = (type) => {
@@ -9,6 +10,7 @@ const getBubbleIcon = (type) => {
         case 'QUESTION': return '❓';
         case 'JUNCTION': return '🔀';
         case 'MESSAGE': return '📩';
+        case 'HINT': return '💡';
         default: return '💬';
     }
 };
@@ -123,12 +125,14 @@ function CarPlayer({ player, targetScore, roadIndex, laneIndex, isHighlighted, o
     let expression = "";
     let options = [];
     let timeLimit = 1;
+    let hint = null; // משתנה לרמז
 
     if (activeTask) {
         expression = activeTask.expression;
         timeLimit = activeTask.timeLimitMillis || 1;
         if (player.currentQuestion) {
             options = activeTask.options || [];
+            hint = player.currentQuestion.hint; // שליפת הרמז אם קיים
         } else if (player.currentJunction) {
             options = [activeTask.offer1, activeTask.offer2].filter(Boolean);
         }
@@ -177,6 +181,15 @@ function CarPlayer({ player, targetScore, roadIndex, laneIndex, isHighlighted, o
                                     <div className="question-part">
                                         <div className="question-text" dir="rtl">{expression}</div>
                                     </div>
+
+                                    {/* רינדור תיבת הרמז במידה והתקבל */}
+                                    {hint && (
+                                        <div className="hint-part" dir="rtl">
+                                            <FaLightbulb className="hint-icon" />
+                                            <span className="hint-text">{hint}</span>
+                                        </div>
+                                    )}
+
                                     <div className="options-part">
                                         <div className="options-list">
                                             {options.map((opt, idx) => (
@@ -226,6 +239,5 @@ function CarPlayer({ player, targetScore, roadIndex, laneIndex, isHighlighted, o
         </div>
     );
 }
-
 
 export default memo(CarPlayer);

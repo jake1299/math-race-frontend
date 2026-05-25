@@ -3,15 +3,14 @@
     max-width: 900px;
     margin: 0 auto;
     height: 100dvh;
-    max-height: 100dvh;
     padding: 10px 20px 20px 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     box-sizing: border-box;
 }
-
 /* Header & Timer */
 .race-header {
     flex-shrink: 0;

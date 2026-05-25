@@ -1,0 +1,161 @@
+/* RaceMessages.css */
+
+.race-messages-wrapper {
+    position: absolute;
+    top: 100%;
+    left: 85px; /* ממוקם מימין לכפתור ההגדרות */
+    z-index: 9999;
+}
+
+/* לשונית חצי עיגול - זהה לחלוטין להגדרות */
+.messages-tab-btn {
+    all: unset;
+    box-sizing: border-box;
+    width: 60px;
+    height: 32px;
+    border-radius: 0 0 30px 30px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-top: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 4px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 1.2rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transform: none !important;
+}
+
+.messages-tab-btn:hover,
+.messages-tab-btn.active {
+    background: var(--bg) !important;
+    color: var(--blue) !important;
+    transform: none !important;
+}
+
+.msg-icon {
+    transition: transform 0.3s ease;
+}
+
+.messages-tab-btn.active .msg-icon {
+    transform: scale(1.1);
+}
+
+/* באדג' (נקודה אדומה) של הודעות חדשות */
+.unread-badge {
+    position: absolute;
+    top: -6px; /* קצת יותר גבוה */
+    right: -2px; /* בולט יותר ימינה */
+    background: var(--red);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 900;
+    font-family: var(--mono);
+    border-radius: 12px;
+    padding: 2px 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 99999; /* מונע ממרכיבים אחרים להסתיר אותו */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1; /* מוודא שהטקסט יושב בדיוק באמצע */
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+/* הפאנל של ההודעות */
+.messages-dropdown-panel {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 280px;
+    max-height: 350px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+    direction: rtl; /* יישור לימין לעברית */
+    animation: slideDownSettings 0.2s ease-out;
+    z-index: 99999;
+}
+
+.messages-title {
+    margin: 0 0 12px 0;
+    font-size: 1.1rem;
+    color: var(--text-h);
+    text-align: center;
+    font-weight: 900;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.messages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    padding-right: 4px;
+    padding-left: 4px;
+}
+
+/* פס גלילה מותאם */
+.messages-list::-webkit-scrollbar { width: 6px; }
+.messages-list::-webkit-scrollbar-track { background: var(--code-bg); border-radius: 4px; }
+.messages-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.empty-messages {
+    text-align: center;
+    color: var(--text);
+    font-size: 0.9rem;
+    padding: 20px 0;
+    font-style: italic;
+}
+
+/* הודעה בודדת */
+.message-item {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text);
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 4px;
+}
+
+.message-sender {
+    font-weight: bold;
+    color: var(--blue);
+}
+
+.message-time {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+}
+
+.message-text {
+    font-size: 0.95rem;
+    color: var(--text-h);
+    line-height: 1.4;
+    word-break: break-word;
+}

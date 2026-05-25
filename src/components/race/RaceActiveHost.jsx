@@ -4,58 +4,35 @@ import './RaceActiveHost.css';
 import RaceHeaderHost from "./RaceHeaderHost.jsx";
 import TrackGroup from './TrackGroup.jsx';
 
-function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPlayer, onPauseRace, onResumeRace, onCancelRace }) {
+function RaceActiveHost({ raceState, joinToken, timeOffset = 0, onKickPlayer, onSendMessageToPlayer, onPauseRace, onResumeRace, onCancelRace ,onChangeNickname, onChangeRaceName}) {
     const { isConnected, subscribe } = useWebSocket();
     const [livePlayers, setLivePlayers] = useState(raceState.players);
     const [localTimeLeft, setLocalTimeLeft] = useState(raceState.remainingTimeMs);
-    const endTimeRef = useRef(0);
     const lastSyncTimeRef = useRef(raceState.receivedAt || 0);
 
     useEffect(() => {
-        if (raceState.status === 'IN_PROGRESS') {
-            const receivedTime = raceState.receivedAt || Date.now();
-            endTimeRef.current = receivedTime + raceState.remainingTimeMs;
-        } else {
+        if (!raceState || raceState.remainingTimeMs == null) return;
+        if (raceState.status !== 'IN_PROGRESS') {
             setLocalTimeLeft(raceState.remainingTimeMs);
+            return;
         }
-    }, [raceState.remainingTimeMs, raceState.status, raceState.receivedAt]);
 
-    useEffect(() => {
-        if (raceState.status !== 'IN_PROGRESS') return;
+        const validOffset = isNaN(timeOffset) ? 0 : timeOffset;
+        const safeReceivedAt = raceState.receivedAt || (Date.now() - validOffset);
+        const raceEndTime = safeReceivedAt + raceState.remainingTimeMs;
 
-        let intervalId;
+        const intervalId = setInterval(() => {
+            const currentServerTime = Date.now() - validOffset;
+            const remaining = Math.max(0, raceEndTime - currentServerTime);
+            setLocalTimeLeft(isNaN(remaining) ? 0 : remaining);
+            if (remaining <= 0) clearInterval(intervalId);
+        }, 100);
 
-        const updateTimer = () => {
-            const now = Date.now();
-            const remaining = Math.max(0, endTimeRef.current - now);
+        const initialServerTime = Date.now() - validOffset;
+        setLocalTimeLeft(Math.max(0, raceEndTime - initialServerTime));
 
-            setLocalTimeLeft(prevTime => {
-                if (Math.floor(prevTime / 1000) !== Math.floor(remaining / 1000) || remaining <= 0) {
-                    return remaining;
-                }
-                return prevTime;
-            });
-
-            if (remaining <= 0) {
-                clearInterval(intervalId);
-            }
-        };
-
-        updateTimer();
-        intervalId = setInterval(updateTimer, 100);
-
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible') {
-                updateTimer();
-            }
-        };
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        return () => {
-            clearInterval(intervalId);
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
-        };
-    }, [raceState.status]);
+        return () => clearInterval(intervalId);
+    }, [raceState.receivedAt, raceState.remainingTimeMs, raceState.status, timeOffset]);
 
     useEffect(() => {
         const isFullSync = raceState.receivedAt !== lastSyncTimeRef.current;
@@ -80,7 +57,7 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
                             ...existing,
                             online: parentPlayer.online,
                             nickname: parentPlayer.nickname,
-                            currentScore: Math.max(existing.currentScore || 0, parentPlayer.currentScore || 0)
+                            currentScore: Math.max(existing.currentScore || 0, parentPlayer.currentScore || 0),
                         };
                     }
                 }
@@ -94,6 +71,7 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
         const queue = `/user/queue/race/host`;
 
         const unsubscribe = subscribe(queue, (data) => {
+            console.log(data);
             setLivePlayers(prevPlayers => {
                 const targetPlayerId = data.type === 'NEW_HOST_MESSAGE' ? data.data.to : data.data.playerId;
 
@@ -130,10 +108,23 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
                                 timeLimitMillis: data.data.timeLimitMillis,
                                 questionRemainingTimeMillis: data.data.questionRemainingTimeMillis,
                                 score: data.data.score,
-                                receivedAt: Date.now()
+                                canAskHint : data.data.canAskHint,
+                                hint: data.data.hint,
+                                receivedAt:data.data.sentAt
                             };
                             updatedPlayer.currentJunction = null;
                             updatedPlayer.bubbleEvent = { type: 'QUESTION', id: bubbleId };
+                            break;
+
+                        case 'QUESTION_HINT' :
+                            if (updatedPlayer.currentQuestion) {
+                                updatedPlayer.currentQuestion = {
+                                    ...updatedPlayer.currentQuestion,
+                                    canAskHint: false,
+                                    hint: data.data.hint,
+                                };
+                            }
+                            updatedPlayer.bubbleEvent = { type: 'HINT', id: bubbleId };
                             break;
                         case 'JUNCTION_OFFERED_TO_PLAYER':
                             updatedPlayer.trackState = data.data.state;
@@ -143,7 +134,7 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
                                 offer2: data.data.offer2,
                                 timeLimitMillis: data.data.timeLimitMillis,
                                 questionRemainingTimeMillis: data.data.questionRemainingTimeMillis,
-                                receivedAt: Date.now()
+                                receivedAt: data.data.sentAt,
                             };
                             updatedPlayer.currentQuestion = null;
                             updatedPlayer.bubbleEvent = { type: 'JUNCTION', id: bubbleId };
@@ -193,7 +184,8 @@ function RaceActiveHost({ raceState, joinToken, onKickPlayer, onSendMessageToPla
                 onPauseRace={onPauseRace}
                 onResumeRace={onResumeRace}
                 onCancelRace={onCancelRace}
-                roomCode={raceState.roomCode}
+                onChangeNickname={onChangeNickname}
+                onChangeRaceName={onChangeRaceName}
             />
 
             <div className="race-arena">

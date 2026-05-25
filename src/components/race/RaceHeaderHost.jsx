@@ -1,24 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ConfirmModal from '../ui/ConfirmModal';
+import { FaRegCopy, FaCheck } from "react-icons/fa6";
+import RaceSettingsHost from './RaceSettingsHost.jsx';
 import './RaceHeaderHost.css';
 
 const formatTime = (ms) => {
-    if (ms < 0) ms = 0;
+    if (typeof ms !== 'number' || isNaN(ms) || ms <= 0) {
+        return "0:00";
+    }
     const totalSeconds = Math.floor(ms / 1000);
     const mins = Math.floor(totalSeconds / 60);
     const secs = totalSeconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, onKickPlayer, onPauseRace, onResumeRace, onCancelRace, roomCode }) => {
+const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, onKickPlayer, onPauseRace, onResumeRace, onCancelRace, onChangeNickname, onChangeRaceName }) => {
+    const [isOpen, setIsOpen] = useState(true);
     const [isPlayersMenuOpen, setIsPlayersMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterMode, setFilterMode] = useState("ALL");
     const [sortOrder, setSortOrder] = useState("DESC");
     const [isCopied, setIsCopied] = useState(false);
-
-    // סטייט עבור מודאל האישור
-    const [confirmModal, setConfirmModal] = useState({ isOpen: false, actionType: null });
 
     const dropdownRef = useRef(null);
 
@@ -37,9 +38,11 @@ const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, 
         };
     }, [isPlayersMenuOpen]);
 
+    const validTimeLeft = (typeof localTimeLeft === 'number' && !isNaN(localTimeLeft)) ? localTimeLeft : 0;
     const totalTime = raceState.totalDurationMillis || 1;
-    const timePercent = Math.max(0, Math.min(100, (localTimeLeft / totalTime) * 100));
-    const isDanger = localTimeLeft <= 10000 && localTimeLeft > 0;
+    const timePercent = Math.max(0, Math.min(100, (validTimeLeft / totalTime) * 100));
+    const isDanger = validTimeLeft <= 10000 && validTimeLeft > 0;
+    const isPaused = raceState.status === 'PAUSED';
 
     const getFilteredAndSortedPlayers = () => {
         return livePlayers
@@ -78,7 +81,7 @@ const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, 
     };
 
     const handleCopyCode = () => {
-        const code = raceState.roomCode || roomCode;
+        const code = raceState.roomCode;
         if (code) {
             navigator.clipboard.writeText(code);
             setIsCopied(true);
@@ -86,59 +89,34 @@ const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, 
         }
     };
 
-    // פונקציות טיפול במודאל
-    const openConfirmModal = (actionType) => {
-        setConfirmModal({ isOpen: true, actionType });
-    };
-
-    const closeConfirmModal = () => {
-        setConfirmModal({ isOpen: false, actionType: null });
-    };
-
-    const executeConfirmedAction = () => {
-        if (confirmModal.actionType === 'PAUSE') onPauseRace();
-        else if (confirmModal.actionType === 'RESUME') onResumeRace();
-        else if (confirmModal.actionType === 'CANCEL') onCancelRace();
-
-        closeConfirmModal();
-    };
-
-    // פונקציה לייצור הודעת המודאל הדינמית
-    const getModalMessage = () => {
-        switch (confirmModal.actionType) {
-            case 'PAUSE': return 'האם אתה בטוח שברצונך להשהות את המירוץ?';
-            case 'RESUME': return 'האם אתה בטוח שברצונך להמשיך את המירוץ?';
-            case 'CANCEL': return 'האם אתה בטוח שברצונך לבטל את המירוץ לחלוטין? כל ההתקדמות תאבד (פעולה זו בלתי הפיכה!).';
-            default: return '';
-        }
-    };
-
-    const isPaused = raceState.status === 'PAUSED';
-
     return (
-        <>
-            <div className="custom-race-header">
+        <div className={`custom-race-header ${isOpen ? '' : 'closed'}`}>
+            <div className={`header-collapse-wrapper ${isPlayersMenuOpen ? 'dropdown-open' : ''}`}>
                 <div className="header-top-row">
 
                     {/* צד ימין (פרטי חדר ומנהל) */}
                     <div className="header-info-group">
                         <div className="room-details">
-                            <h2>{raceState.name}</h2>
-                            <div className="room-code-wrapper">
-                                <span className="room-code-label">קוד:</span>
+                            <div className="room-name-and-code">
+                                <h2>{raceState.name}</h2>
                                 <div className="room-code-box">
-                                    <span className="code-text">{raceState.roomCode || roomCode || '---'}</span>
+                                    <span className="code-text">{raceState.roomCode || '---'}</span>
                                     <button className="copy-btn" onClick={handleCopyCode} title="העתק קוד">
-                                        {isCopied ? '✅' : '📋'}
+                                        {isCopied ? <FaCheck style={{ color: 'var(--green)' }} /> : <FaRegCopy style={{ color: 'var(--text-h)' }} />}
                                     </button>
                                 </div>
+                            </div>
+
+                            <div className={`race-status-badge ${isPaused ? 'paused' : 'active'}`}>
+                                <span className="status-text">Status: {isPaused ? 'Paused' : 'Active'}</span>
+                                <span className="status-circle"></span>
                             </div>
                         </div>
                         <div className="vertical-separator"></div>
                         <div className="host-details">
                             <div className="host-nickname-wrapper">
-                                <span className={`status-dot ${raceState.host?.online ? 'online' : 'offline'}`} title={raceState.host?.online ? 'מחובר' : 'מנותק'}></span>
                                 <span className="host-nickname-large">{raceState.host?.nickname || 'מנהל'}</span>
+                                <span className={`status-dot ${raceState.host?.online ? 'online' : 'offline'}`} title={raceState.host?.online ? 'מחובר' : 'מנותק'}></span>
                             </div>
                             {raceState.host?.userName ? (
                                 <span className="host-username blue-text">@{raceState.host.userName}</span>
@@ -153,7 +131,7 @@ const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, 
                         <div className="timer-text">
                             <span>זמן נותר:</span>
                             <span className={`time-value ${isDanger ? 'danger-text' : ''}`}>
-                                {formatTime(localTimeLeft)}
+                                {formatTime(validTimeLeft)}
                             </span>
                         </div>
                         <div className={`progress-bar-container ${isDanger ? 'danger-border' : ''}`}>
@@ -163,23 +141,8 @@ const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, 
                         <span className="target-score">יעד נקודות: {raceState.targetScore}</span>
                     </div>
 
-                    {/* צד שמאל: כפתורים */}
-                    <div className="header-left-group">
-                        <div className="race-control-buttons">
-                            <button
-                                className="control-btn orange-btn"
-                                onClick={() => openConfirmModal(isPaused ? 'RESUME' : 'PAUSE')}
-                            >
-                                {isPaused ? '▶ המשך מירוץ' : '⏸ עצור מירוץ'}
-                            </button>
-                            <button
-                                className="control-btn red-btn"
-                                onClick={() => openConfirmModal('CANCEL')}
-                            >
-                                ✖ בטל מירוץ
-                            </button>
-                        </div>
-
+                    {/* צד שמאל: רשימת השחקנים נשארה, הכפתורים הועברו להגדרות */}
+                    <div className="header-info-group host-left-group">
                         <div className="header-actions" ref={dropdownRef}>
                             <button
                                 className="players-toggle-btn"
@@ -187,10 +150,9 @@ const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, 
                             >
                                 👥 רשימת שחקנים
                             </button>
-                            <div className="title-separator"></div>
                             <div className="participants-info">
-                                <span className="participants-label">משתתפים:</span>
-                                <span className="participants-count">{livePlayers.length}</span>
+                                <span className="participants-label">משתתפים מחוברים:</span>
+                                <span className="participants-count">{livePlayers.filter(p => p.online).length}/{livePlayers.length}</span>
                             </div>
 
                             {isPlayersMenuOpen && (
@@ -229,19 +191,40 @@ const RaceHeaderHost = ({ raceState, livePlayers, localTimeLeft, onPlayerClick, 
                                 </div>
                             )}
                         </div>
-
                     </div>
+
                 </div>
             </div>
 
-            {/* קומפוננטת המודאל הגנרית שלנו */}
-            <ConfirmModal
-                isOpen={confirmModal.isOpen}
-                message={getModalMessage()}
-                onConfirm={executeConfirmedAction}
-                onCancel={closeConfirmModal}
-            />
-        </>
+            {/* אזור הלשוניות (כפתורי חצי עיגול) */}
+            <div className="header-bottom-tabs-container">
+                {/* צד שמאל - ההגדרות של המנהל */}
+                <div className="tabs-side tabs-left">
+                    <RaceSettingsHost
+                        currentNickname={raceState.host?.nickname}
+                        currentRaceName={raceState.name}
+                        isPaused={isPaused}
+                        onChangeNickname={onChangeNickname}
+                        onChangeRaceName={onChangeRaceName}
+                        onPauseRace={onPauseRace}
+                        onResumeRace={onResumeRace}
+                        onCancelRace={onCancelRace}
+                    />
+                </div>
+
+                {/* אמצע - כפתור פתיחה/סגירה מרכזי */}
+                <button
+                    className="header-toggle-btn"
+                    onClick={() => setIsOpen(!isOpen)}
+                    title={isOpen ? "הסתר כותרת" : "הצג כותרת"}
+                >
+                    {isOpen ? '▲' : '▼'}
+                </button>
+
+                {/* צד ימין - מקום ריק לאיזון האמצע */}
+                <div className="tabs-side tabs-right"></div>
+            </div>
+        </div>
     );
 };
 

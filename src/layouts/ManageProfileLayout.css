@@ -5,6 +5,10 @@
     padding: 0 20px;
     align-items: flex-start;
     height: calc(100vh - 100px);
+
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
 }
 
 .profile-sidebar {

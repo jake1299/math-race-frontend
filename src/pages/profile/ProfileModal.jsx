@@ -1,16 +1,68 @@
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button.jsx";
-import {AlertModal} from "../../components/ui/AlertModal.jsx";
-
+import { AlertModal } from "../../components/ui/AlertModal.jsx";
+import { myProfile } from "../../services/userProfileService.js";
+import { ClipLoader } from "react-spinners";
+import { useWebSocket } from "../../services/webSocket/WebSocketContext.js";
 import './ProfileModal.css';
 
-function ProfileModal({onClose, user}) {
+function ProfileModal({ onClose, user: initialUser, onLogout}) {
     const navigate = useNavigate();
+    const { updateAuthToken } = useWebSocket() || {};
+
+    const [user, setUser] = useState(initialUser || null);
+    const [loading, setLoading] = useState(!initialUser);
+
+    useEffect(() => {
+        if (initialUser) return;
+
+        const fetchUserData = async () => {
+            try {
+                const response = await myProfile();
+
+                if (response && response.success && response.data) {
+                    setUser(response.data);
+                } else if (response && response.username) {
+                    setUser(response);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user profile in modal:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [initialUser]);
 
     const handleNavigation = (path) => {
         onClose();
         navigate(path);
     };
+
+    const handleLogout = () => {
+        console.log("מבצע יציאה מהחשבון...");
+
+        if (typeof updateAuthToken === 'function') {
+            updateAuthToken(null, null);
+        }
+
+        setUser(null);
+        if (onLogout) onLogout();
+
+        onClose();
+    };
+
+    if (loading) {
+        return (
+            <AlertModal title="" onClose={onClose}>
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+                    <ClipLoader color="#36d7b7" />
+                </div>
+            </AlertModal>
+        );
+    }
 
     if (!user) {
         return (
@@ -38,8 +90,7 @@ function ProfileModal({onClose, user}) {
         );
     }
 
-    // === מצב מחובר (Authenticated View) ===
-    const {username, email} = user;
+    const { username, email } = user;
 
     return (
         <AlertModal title="My Profile" onClose={onClose}>
@@ -58,7 +109,7 @@ function ProfileModal({onClose, user}) {
                     Manage Profile
                 </Button>
 
-                <Button className="btn-logout" onClick={onClose}>
+                <Button className="btn-logout" onClick={handleLogout}>
                     Logout
                 </Button>
             </div>

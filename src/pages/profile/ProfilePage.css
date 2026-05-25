@@ -5,9 +5,9 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 450px;
+    /* התיקון: מאפשר לתוכן להתפרס על כל הקופסה המעוצבת של הלייאוט */
+    max-width: 100%;
     margin: 0 auto;
-    /* Optional: padding if it feels too close to the edges of the main area */
     padding: 20px 0;
 }
 
@@ -25,11 +25,10 @@
     border: 4px solid var(--border);
     box-shadow: 0 4px 0 var(--border);
     margin-bottom: 16px;
-    /* You can set a background color here if needed, or leave it transparent/themed */
     background-color: var(--blue);
 }
 
-/* Typography matching the modal */
+/* Typography */
 .profile-display-name {
     font-size: 28px;
     font-weight: 900;
@@ -48,12 +47,14 @@
 /* Buttons Container */
 .management-actions {
     width: 100%;
+    /* התיקון: מגביל רק את הכפתורים כדי שלא יימרחו על כל המסך */
+    max-width: 450px;
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* General Button Styling overrides (if needed on top of your default Button component) */
+/* General Button Styling overrides */
 .management-actions button {
     width: 100%;
     font-weight: 900;

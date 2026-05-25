@@ -18,13 +18,12 @@ const PlayerAvatar = memo(({ player, isHost }) => {
         backgroundColor: 'var(--code-bg)',
     };
 
-    // עיצוב הנקודה הקטנה ליד השם
     const smallDotStyle = {
         width: '10px',
         height: '10px',
         borderRadius: '50%',
         backgroundColor: isOnline ? 'var(--green)' : '#94a3b8',
-        display: 'inline-block', // גורם לה להתנהג כמו אות/מילה
+        display: 'inline-block',
         flexShrink: 0
     };
 
