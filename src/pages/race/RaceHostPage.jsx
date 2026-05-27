@@ -235,6 +235,7 @@ function RaceHostPage() {
                     totalDurationMillis: data.data.totalDurationMillis,
                     remainingTimeMs: data.data.remainingTimeMs,
                     receivedAt: data.data.sentAt,
+                    fullSyncTimestamp: Date.now(),
                     host: {
                         id: data.data.host.id,
                         userName : data.data.host.userName,

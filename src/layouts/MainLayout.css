@@ -1,3 +1,4 @@
+/*MainLayout.css*/
 /* --- מעטפת ראשית --- */
 .main-layout-wrapper {
     display: flex;
@@ -108,4 +109,172 @@
     width: 100%;
     display: flex;
     justify-content: center;
+}
+
+/* ========================================= */
+/* --- עיצוב בלעדי להודעה הקופצת (Toast) --- */
+/* ========================================= */
+.active-race-toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background-color: var(--bg);
+    border: 3px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 20px; /* הקטנו את הריווח האנכי (למעלה ולמטה) ל-14px כדי לחסוך גובה */
+    box-shadow: var(--shadow), 0 6px 0 var(--border);
+    z-index: 9999;
+    width: 320px;
+    direction: ltr;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* הקטנו את הרווח הכללי בין הכותרת, התוכן והכפתורים */
+    animation: slideInRightToast 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- עיצוב הכותרת וכפתור ה-X --- */
+.active-race-toast .toast-header {
+    display: flex;
+    justify-content: center; /* שומר על הכותרת בדיוק באמצע */
+    align-items: center;
+    width: 100%;
+}
+
+.active-race-toast .toast-header h3 {
+    margin: 0;
+    font-family: var(--heading);
+    font-weight: 900;
+    font-size: 1.25rem;
+    color: var(--text-h);
+    text-align: center; /* מרכוז הכותרת */
+}
+
+/* עיצוב כפתור ה-X שיושב בפינה הימנית העליונה */
+.active-race-toast .close-toast-btn {
+    position: absolute;
+    top: 14px; /* מצמיד בדיוק לחלק העליון ביותר של התיבה */
+    right: 16px; /* מצמיד לימין */
+
+    /* איפוס מוחלט של כל עיצוב שמגיע מ-index.css */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.active-race-toast .close-toast-btn:hover {
+    color: var(--red) !important;
+    transform: scale(1.15);
+}
+
+/* --- עיצוב תוכן ההודעה --- */
+.active-race-toast .toast-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.active-race-toast .toast-body p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text);
+    font-family: var(--sans);
+    display: flex;
+    justify-content: space-between;
+}
+
+.active-race-toast .toast-body strong {
+    color: var(--text-h);
+}
+
+.active-race-toast .toast-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 2px; /* צמצום הרווח מעל הכפתורים */
+}
+
+.active-race-toast .toast-btn {
+    flex: 1;
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    padding: 8px 10px; /* הקטנו מעט את הגובה של הכפתורים */
+    cursor: pointer;
+    border: none;
+    color: #fff;
+    transition: all 0.1s ease;
+}
+
+.active-race-toast .green-btn {
+    background-color: var(--green);
+    box-shadow: 0 4px 0 #15803d;
+}
+
+.active-race-toast .green-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #15803d;
+}
+
+.active-race-toast .green-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 #15803d;
+}
+
+.active-race-toast .red-btn {
+    background-color: var(--red);
+    box-shadow: 0 4px 0 #b91c1c;
+}
+
+.active-race-toast .red-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #b91c1c;
+}
+
+.active-race-toast .red-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 #b91c1c;
+}
+
+@keyframes slideInRightToast {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ========================================= */
+/* --- רספונסיביות למסכים קטנים (Mobile) --- */
+/* ========================================= */
+@media (max-width: 480px) {
+    .active-race-toast {
+        width: calc(100% - 40px);
+        right: 20px;
+        bottom: 20px;
+        padding: 12px 16px; /* ריווח פנימי קטן אף יותר במובייל */
+        box-sizing: border-box;
+    }
+
+    .active-race-toast .toast-btn {
+        font-size: 0.85rem;
+        padding: 10px 8px;
+    }
+
+    .active-race-toast .close-toast-btn {
+        top: 12px;
+        right: 12px;
+    }
 }

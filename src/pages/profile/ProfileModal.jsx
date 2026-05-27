@@ -13,25 +13,29 @@ function ProfileModal({ onClose, user: initialUser, onLogout}) {
 
     const [user, setUser] = useState(initialUser || null);
     const [loading, setLoading] = useState(!initialUser);
+    const [error, setError] = useState(false);
+
+    const fetchUserData = async () => {
+        setLoading(true);
+        setError(false);
+        try {
+            const response = await myProfile();
+
+            if (response && response.success && response.data) {
+                setUser(response.data);
+            } else if (response && response.username) {
+                setUser(response);
+            }
+        } catch (error) {
+            console.error("Failed to fetch user profile in modal:", error);
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (initialUser) return;
-
-        const fetchUserData = async () => {
-            try {
-                const response = await myProfile();
-
-                if (response && response.success && response.data) {
-                    setUser(response.data);
-                } else if (response && response.username) {
-                    setUser(response);
-                }
-            } catch (error) {
-                console.error("Failed to fetch user profile in modal:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
         fetchUserData();
     }, [initialUser]);
@@ -59,6 +63,31 @@ function ProfileModal({ onClose, user: initialUser, onLogout}) {
             <AlertModal title="" onClose={onClose}>
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
                     <ClipLoader color="#36d7b7" />
+                </div>
+            </AlertModal>
+        );
+    }
+
+    if (error) {
+        return (
+            <AlertModal title="" onClose={onClose}>
+                <div className="profile-content" style={{ marginTop: '16px' }}>
+                    <div style={{ fontSize: '40px', textAlign: 'center', marginBottom: '10px' }}>🔌</div>
+                    <h3 className="profile-name" style={{ textAlign: 'center', fontSize: '24px', lineHeight: '1.2', color: '#d9534f' }}>
+                        Connection Failed
+                    </h3>
+                    <p className="profile-email" style={{ textAlign: 'center', lineHeight: '1.4', marginTop: '12px' }}>
+                        Unable to connect to the server. Please check your connection or try again later.
+                    </p>
+                </div>
+
+                <hr className="profile-divider"/>
+
+                <div className="profile-actions" style={{ justifyContent: 'center' }}>
+                    {/* שינינו את הפעולה ל-fetchUserData ואת הטקסט ל-Try Again */}
+                    <Button onClick={fetchUserData} style={{ width: '100%' }}>
+                        Try Again
+                    </Button>
                 </div>
             </AlertModal>
         );

@@ -9,6 +9,7 @@ function PublicRacesPage() {
 
     const [races, setRaces] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
@@ -16,6 +17,7 @@ function PublicRacesPage() {
 
     const fetchRaces = async () => {
         setLoading(true);
+        setError(false);
         try {
             const loc = { page: page, size: SIZE };
             const response = await publicRacesList(loc);
@@ -31,6 +33,7 @@ function PublicRacesPage() {
             console.error("Failed to fetch public races:", err);
             setRaces([]);
             setHasMore(false);
+            setError(true);
         } finally {
             setLoading(false);
         }
@@ -67,6 +70,23 @@ function PublicRacesPage() {
                 <div className="races-list-wrapper">
                     {loading ? (
                         <div className="loading-state">Loading active races...</div>
+                    ) : error ? (
+                        <div className="error-state" style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+                            <div style={{ fontSize: '40px', marginBottom: '10px' }}>🔌</div>
+                            <h3 style={{ color: '#d9534f', margin: '0 0 10px 0', fontSize: '20px' }}>
+                                Connection Failed
+                            </h3>
+                            <p style={{ margin: '0 0 20px 0', color: '#666' }}>
+                                Unable to connect to the server to load races.
+                            </p>
+                            <button
+                                className="join-race-btn"
+                                onClick={handleRefresh}
+                                style={{ display: 'inline-block', padding: '8px 16px' }}
+                            >
+                                Try Again
+                            </button>
+                        </div>
                     ) : races.length === 0 ? (
                         <div className="empty-state">
                             No active public races at the moment.

@@ -3,6 +3,8 @@ import { Client } from '@stomp/stompjs';
 import { WebSocketContext } from './WebSocketContext.js';
 import { cookieService } from '../cookieService.js';
 import {createGuestToken} from "../authService.js";
+import {IP_SERVER} from "../../api/axios.js"
+
 
 function WebSocketProvider({ children }) {
     const [isConnected, setIsConnected] = useState(false);
@@ -51,10 +53,11 @@ function WebSocketProvider({ children }) {
         //if (!authToken && !guestToken) return;
 
         const client = new Client({
-            brokerURL: 'ws://localhost:8085/api/ws-race',
+            brokerURL: `ws://${IP_SERVER}/api/ws-race`,
             connectHeaders: {
                 Authorization: authToken ? `Bearer ${authToken}` : '',
-                GuestToken: guestToken || ''
+                GuestToken: guestToken || '',
+                'Is-Recovery': 'false'
             },
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
@@ -66,9 +69,11 @@ function WebSocketProvider({ children }) {
                 clearLastMessage();
                 clearError();
                 hasRecovered.current = false;
+                client.connectHeaders['Is-Recovery'] = 'false';
 
                 client.subscribe('/user/queue/notifications', (message) => {
                     const data = JSON.parse(message.body);
+                    console.log("הגיע הודעה ל /user/queue/notifications'",data);
 
                     if (data.type === 'ERROR') {
                         console.log(data.content + " -1-");
@@ -143,6 +148,7 @@ function WebSocketProvider({ children }) {
             console.log("Browser detected network offline!");
             if (clientRef.current) {
                 clientRef.current.deactivate();
+                clientRef.current.connectHeaders['Is-Recovery'] = 'true';
             }
             setIsConnected(false);
             setError("Session closed.");

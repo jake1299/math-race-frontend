@@ -1,8 +1,11 @@
 .flip-card-container {
     perspective: 1000px;
     width: 100%;
-    flex: 1;
-    min-height: 200px;
+
+    /* התיקון: שינינו את 40vh ל-0% */
+    flex: 1 0 0%;
+    min-height: 250px;
+
     position: relative;
     z-index: 10;
 }

@@ -39,7 +39,6 @@ const PlayerAvatar = memo(({ player, isHost }) => {
             </div>
 
             <div className="avatar-names">
-                {/* עטיפה לשם ולנקודה כדי שיהיו בשורה אחת וממורכזים */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
                     <span className="avatar-nickname">{player.nickname}</span>
                     <div className="status-dot" style={smallDotStyle}></div>
@@ -66,6 +65,10 @@ function RaceLobby({ raceState, onStartRace, isHost }) {
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [confirmActionType, setConfirmActionType] = useState(null); // 'close' | 'leave'
 
+    // סטייטים נפרדים לחיווי העתקה
+    const [copyCodeSuccess, setCopyCodeSuccess] = useState(false);
+    const [shareCopySuccess, setShareCopySuccess] = useState(false);
+
     const isPrivateRoom = true;
     const mockPendingPlayers = [
         { id: '1', nickname: 'New Player 1' },
@@ -91,29 +94,81 @@ function RaceLobby({ raceState, onStartRace, isHost }) {
         setIsSettingsOpen(false);
     };
 
-    const handleShare = async () => {
-        const shareData = {
-            title: '🏎️ Join the Math Race!',
-            text: `🏎️ *Join the Math Race!*\n\nA new room is open and waiting for players in the lobby! 🏆\nLet's see who wins. Click the link to join directly:\n(Room Code: ${raceState.roomCode})`,
-            url: inviteLink
-        };
-
+    // פונקציית בסיס שרק מעתיקה טקסט ללוח (עם Fallback לטלפונים/HTTP)
+    const performCopy = async (textToCopy) => {
         try {
-            if (navigator.share) {
-                await navigator.share(shareData);
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(textToCopy);
+                return true;
             } else {
-                fallbackShare();
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    return true;
+                } catch (err) {
+                    console.error('Fallback copy failed', err);
+                    document.body.removeChild(textArea);
+                    return false;
+                }
             }
-        } catch (error) {
-            console.error("Share failed:", error);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+            return false;
         }
     };
 
-    const fallbackShare = () => {
-        navigator.clipboard.writeText(
-            `A Math Race is starting! Join here: ${inviteLink}`
-        );
-        alert("Link copied to clipboard!");
+    // מטפל בלחיצה על כפתור "Copy" (מעתיק רק את קוד החדר)
+    const handleCopyCodeClick = async () => {
+        const success = await performCopy(raceState.roomCode);
+        if (success) {
+            setCopyCodeSuccess(true);
+            setTimeout(() => setCopyCodeSuccess(false), 2000);
+        }
+    };
+
+    // מטפל בלחיצה על כפתור "Share"
+    const handleShareClick = async () => {
+        const shareData = {
+            title: '🏎️ Join the Math Race!',
+            text: `🏎️ *Join the Math Race!*\n\nA new room is open and waiting for players in the lobby! 🏆\nLet's see who wins.\nRoom Code: ${raceState.roomCode}`,
+            url: inviteLink
+        };
+
+        // במקרה שאין תמיכה בשיתוף טבעי - זה מה שיועתק. מעתיק *רק* את הקישור.
+        const fallbackText = inviteLink;
+
+        // מנסה לשתף באופן טבעי (עובד רק ב-HTTPS/Localhost)
+        if (navigator.share && window.isSecureContext) {
+            try {
+                await navigator.share(shareData);
+            } catch (error) {
+                // אם המשתמש סגר את תפריט השיתוף של הטלפון, מתעלמים
+                // אם זו שגיאה אחרת, מעתיקים את הקישור ללוח
+                if (error.name !== 'AbortError') {
+                    const success = await performCopy(fallbackText);
+                    if (success) {
+                        setShareCopySuccess(true);
+                        setTimeout(() => setShareCopySuccess(false), 2000);
+                    }
+                }
+            }
+        } else {
+            // אם אין תמיכה בשיתוף בכלל, מעתיקים את הקישור ללוח
+            const success = await performCopy(fallbackText);
+            if (success) {
+                setShareCopySuccess(true);
+                setTimeout(() => setShareCopySuccess(false), 2000);
+            } else {
+                alert("Could not share or copy link.");
+            }
+        }
     };
 
     const handleOpenConfirmModal = (type) => {
@@ -266,30 +321,48 @@ function RaceLobby({ raceState, onStartRace, isHost }) {
                     <p className="invite-title">Invite Players</p>
                     <h2 className="massive-code">{raceState.roomCode}</h2>
 
-                    {/*<div className="qr-wrapper">*/}
-                    {/*    <QRCode value={window.location.href} size={140} />*/}
-                    {/*</div>*/}
-
                     <div className="qr-wrapper">
                         <QRCode
                             value={inviteLink}
-                            size={140}
+                            size={160}
                             logoImage={myLogo}
-                            logoWidth={80}
-                            logoHeight={40}
+                            logoWidth={45}
+                            logoHeight={22}
                             logoOpacity={1}
-                            qrStyle="dots"
-                            eyeRadius={10}
+                            removeQrCodeBehindLogo={true} /* מוחק את הפיקסלים שמתחת ללוגו למראה נקי */
+                            logoPadding={4} /* מוסיף מסגרת לבנה עדינה מסביב ללוגו */
+                            qrStyle="squares"
+                            ecLevel="M" /* הורדנו מ-H ל-M: הברקוד יהיה הרבה פחות צפוף! */
+                            eyeRadius={8} /* מעגל את הפינות של 3 הריבועים הגדולים (העיניים) */
                             quietZone={10}
+                            bgColor="#FFFFFF"
+                            fgColor="#1e293b" /* צבע כחול-אפור עמוק (Slate 800) במקום שחור חזק */
                         />
                     </div>
 
                     <div className="invite-actions">
-                        <Button onClick={() => navigator.clipboard.writeText(raceState.roomCode)} title="Copy Code">
-                            <FaCopy /> Copy
+                        <Button
+                            onClick={handleCopyCodeClick}
+                            title="Copy Code"
+                            className={copyCodeSuccess ? "success-btn" : ""}
+                        >
+                            {copyCodeSuccess ? (
+                                <><FaCheck style={{ marginRight: '6px' }} /> Copied!</>
+                            ) : (
+                                <><FaCopy style={{ marginRight: '6px' }} /> Copy</>
+                            )}
                         </Button>
-                        <Button onClick={handleShare} title="Share Room">
-                            <FaShareNodes /> Share
+
+                        <Button
+                            onClick={handleShareClick}
+                            title="Share Room"
+                            className={shareCopySuccess ? "success-btn" : ""}
+                        >
+                            {shareCopySuccess ? (
+                                <><FaCheck style={{ marginRight: '6px' }} /> Link Copied!</>
+                            ) : (
+                                <><FaShareNodes style={{ marginRight: '6px' }} /> Share</>
+                            )}
                         </Button>
                     </div>
                 </div>

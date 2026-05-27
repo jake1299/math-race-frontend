@@ -8,7 +8,7 @@ function RaceActiveHost({ raceState, joinToken, timeOffset = 0, onKickPlayer, on
     const { isConnected, subscribe } = useWebSocket();
     const [livePlayers, setLivePlayers] = useState(raceState.players);
     const [localTimeLeft, setLocalTimeLeft] = useState(raceState.remainingTimeMs);
-    const lastSyncTimeRef = useRef(raceState.receivedAt || 0);
+    const lastSyncTimeRef = useRef(raceState.fullSyncTimestamp || 0);
 
     useEffect(() => {
         if (!raceState || raceState.remainingTimeMs == null) return;
@@ -35,9 +35,10 @@ function RaceActiveHost({ raceState, joinToken, timeOffset = 0, onKickPlayer, on
     }, [raceState.receivedAt, raceState.remainingTimeMs, raceState.status, timeOffset]);
 
     useEffect(() => {
-        const isFullSync = raceState.receivedAt !== lastSyncTimeRef.current;
+        const isFullSync = Boolean(raceState.fullSyncTimestamp && raceState.fullSyncTimestamp !== lastSyncTimeRef.current);
+
         if (isFullSync) {
-            lastSyncTimeRef.current = raceState.receivedAt;
+            lastSyncTimeRef.current = raceState.fullSyncTimestamp;
         }
 
         setLivePlayers(prevLive => {
@@ -64,7 +65,7 @@ function RaceActiveHost({ raceState, joinToken, timeOffset = 0, onKickPlayer, on
                 return parentPlayer;
             });
         });
-    }, [raceState.players, raceState.receivedAt]);
+    }, [raceState.players, raceState.fullSyncTimestamp]);
 
     useEffect(() => {
         if (!isConnected) return;
